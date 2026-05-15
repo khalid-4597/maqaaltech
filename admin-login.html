@@ -219,8 +219,8 @@
 <script>
   // Auto-fill on hint click
   document.querySelector('.cred-info').onclick = () => {
-    document.getElementById('email').value = 'admin@maqaaltech.com';
-    document.getElementById('password').value = 'Admin@2025';
+    document.getElementById('email').value = 'diinisalman.com';
+    document.getElementById('password').value = 'caseey97&';
   };
 
   function togglePwd(){
@@ -255,7 +255,7 @@
     document.getElementById('btn-text').textContent='Signing in…';
 
     setTimeout(()=>{
-      if(email==='admin@maqaaltech.com' && pwd==='Admin@2025'){
+      if(email==='diinisalman@gmail.com' && pwd==='caseey97&'){
         sessionStorage.setItem('maqaaltech_admin', '1');
         document.getElementById('btn-text').textContent='✓ Welcome!';
         setTimeout(()=>{ window.location.href='admin-dashboard.html'; },600);
