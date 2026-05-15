@@ -2,203 +2,57 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>MaqaalTech — Professional Admin Panel</title>
+    <title>MaqaalTech — AI News</title>
     <style>
-        :root { --bg:#050a14; --surf:#0b1120; --bord:#1e2d45; --cyan:#00e5ff; --text:#e8f0fe; }
-        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; display: flex; }
-        .sidebar { width: 260px; background: var(--surf); height: 100vh; padding: 20px; border-right: 1px solid var(--bord); position: fixed; }
-        .main { margin-left: 300px; padding: 40px; width: 100%; max-width: 900px; }
-        input, textarea, select { width: 100%; padding: 12px; margin: 10px 0; background: #050a14; border: 1px solid var(--bord); color: #fff; border-radius: 8px; }
-        button { padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .btn-main { background: var(--cyan); color: #000; width: 100%; margin-top: 10px; }
-        .status-box { padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; }
-        .error { background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #ef4444; }
-        .success { background: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e; color: #22c55e; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--bord); }
-        .loader { display:none; position:fixed; top:20px; right:20px; background:var(--cyan); color:#000; padding:10px 20px; border-radius:5px; z-index:1000; }
+        :root { --bg: #050a14; --surface: #0b1120; --border: #1e2d45; --cyan: #00e5ff; --text: #e8f0fe; }
+        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .card { background: var(--surface); border: 1px solid var(--border); padding: 20px; border-radius: 10px; margin-bottom: 20px; cursor: pointer; }
+        .card:hover { border-color: var(--cyan); }
+        .card h2 { margin-top: 0; color: var(--cyan); }
+        #debug-info { color: #ff4d6d; font-size: 0.8rem; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-<div id="loading" class="loader">Dhaqdhaqaaq ayaa socda...</div>
-
-<div class="sidebar">
-    <h2>MaqaalTech</h2>
-    <p style="color:var(--cyan)">Admin Control</p>
-    <hr style="border:0.1px solid var(--bord); margin:20px 0;">
-    <button onclick="testConnection()" style="background:#3b82f6; color:white; width:100%;">Tijaabi Xiriirka GitHub</button>
-    <button onclick="resetForm()" style="background:none; border:1px solid var(--cyan); color:var(--cyan); width:100%; margin-top:10px;">+ Maqaal Cusub</button>
-    <button onclick="location.href='index.html'" style="background:#1e2d45; color:white; width:100%; margin-top:10px;">Arag Bogga Hore</button>
-</div>
-
-<div class="main">
-    <div id="status-display"></div>
-
-    <div style="background:var(--surf); padding:25px; border-radius:12px; border:1px solid var(--bord);">
-        <h3 id="form-title">Qor Maqaal Cusub</h3>
-        <input type="hidden" id="art-id">
-        <input type="text" id="art-title" placeholder="Cinwaanka Maqaalka">
-        <input type="text" id="art-excerpt" placeholder="Faahfaahin kooban (Excerpt)">
-        <textarea id="art-body" rows="8" placeholder="Qoraalka maqaalka oo dhamaystiran..."></textarea>
-        <div style="display:flex; gap:10px;">
-            <select id="art-cat" style="flex:1;">
-                <option value="LLM">LLM</option>
-                <option value="ML">Machine Learning</option>
-                <option value="Policy">AI Policy</option>
-                <option value="Robotics">Robotics</option>
-            </select>
-            <input type="text" id="art-author" placeholder="Qoraaga" style="flex:1;">
+<div class="container">
+    <h1>MAQAALTECH</h1>
+    <div id="debug-info">Cilad-baaris: Fiirinaya xogta...</div>
+    <div id="main-content">
         </div>
-        <label><input type="checkbox" id="art-feat" style="width:auto;"> Featured (Maqaalka Sare)</label>
-        <button class="btn-main" onclick="handlePublish()">PUBLISH TO GITHUB</button>
-    </div>
-
-    <h3>Maqaallada Hadda Jira</h3>
-    <table>
-        <thead>
-            <tr><th>Title</th><th>Category</th><th>Actions</th></tr>
-        </thead>
-        <tbody id="articles-list"></tbody>
-    </table>
 </div>
 
 <script>
-    // ── CONFIGURATION (HALKAN KA SAX) ──
-    const GITHUB_TOKEN = "ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"; // Geli Token-kaaga cusub halkan
-    const REPO_OWNER = "khalid-4597";
-    const REPO_NAME = "maqaaltech";
-    const FILE_PATH = "articles.json";
-
-    let allArticles = [];
-
-    // 1. TIJAABI XIRIIRKA (Cilad-baaris)
-    async function testConnection() {
-        const status = document.getElementById('status-display');
-        status.innerHTML = "Dhowr ilbiriqsi sug...";
+    async function loadArticles() {
+        const debug = document.getElementById('debug-info');
+        const content = document.getElementById('main-content');
+        
         try {
-            const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`, {
-                headers: { "Authorization": `token ${GITHUB_TOKEN}` }
-            });
-            if(res.ok) {
-                status.innerHTML = `<div class="status-box success">✓ Xiriirka GitHub waa boqolkiiba boqol! Dashboard-ku hadda wuu shaqaynayaa.</div>`;
-            } else {
-                const err = await res.json();
-                status.innerHTML = `<div class="status-box error">✘ Cilad: GitHub wuxuu diiday Token-ka. (Message: ${err.message})</div>`;
-            }
-        } catch(e) {
-            status.innerHTML = `<div class="status-box error">✘ Cilad: Internet-kaaga ama koodhka ayaa khaldan.</div>`;
-        }
-    }
-
-    // 2. SOO QAAD XOGTA
-    async function loadData() {
-        try {
-            const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
-                headers: { "Authorization": `token ${GITHUB_TOKEN}` }
-            });
+            // Waxaan isticmaaleynaa dhowr hab si looga gudbo Cache-ga
+            const res = await fetch('articles.json?nocache=' + new Date().getTime());
+            if (!res.ok) throw new Error("articles.json lama helin!");
+            
             const data = await res.json();
-            allArticles = JSON.parse(decodeURIComponent(escape(atob(data.content))));
-            renderTable();
-        } catch (e) { console.error("Error loading data", e); }
-    }
+            debug.innerText = "Xogta waa la helay: " + data.length + " maqaal ayaa ku jira.";
+            debug.style.color = "#00e5ff";
 
-    function renderTable() {
-        const list = document.getElementById('articles-list');
-        list.innerHTML = allArticles.map(n => `
-            <tr>
-                <td>${n.title}</td>
-                <td>${n.category}</td>
-                <td>
-                    <button onclick="prepareEdit(${n.id})" style="background:#22c55e; color:white; padding:5px 10px;">Edit</button>
-                    <button onclick="deleteArticle(${n.id})" style="background:#ef4444; color:white; padding:5px 10px;">Del</button>
-                </td>
-            </tr>
-        `).join('');
-    }
+            content.innerHTML = data.map(n => `
+                <div class="card">
+                    <small style="color:var(--cyan)">${n.category} | ${n.date}</small>
+                    <h2>${n.title}</h2>
+                    <p>${n.excerpt}</p>
+                    <hr style="border:0.1px solid var(--border)">
+                    <div style="font-size:0.9rem; line-height:1.6;">${n.body}</div>
+                </div>
+            `).join('');
 
-    // 3. DIYAARI EDIT
-    function prepareEdit(id) {
-        const art = allArticles.find(n => n.id === id);
-        document.getElementById('art-id').value = art.id;
-        document.getElementById('art-title').value = art.title;
-        document.getElementById('art-excerpt').value = art.excerpt;
-        document.getElementById('art-body').value = art.body;
-        document.getElementById('art-cat').value = art.category;
-        document.getElementById('art-author').value = art.author;
-        document.getElementById('art-feat').checked = art.featured;
-        document.getElementById('form-title').innerText = "Wax ka beddel Maqaalka";
-        window.scrollTo(0,0);
-    }
-
-    function resetForm() {
-        document.getElementById('art-id').value = '';
-        document.getElementById('art-title').value = '';
-        document.getElementById('art-body').value = '';
-        document.getElementById('art-excerpt').value = '';
-        document.getElementById('form-title').innerText = "Qor Maqaal Cusub";
-    }
-
-    // 4. PUBLISH
-    async function handlePublish() {
-        const id = document.getElementById('art-id').value;
-        const newArt = {
-            id: id ? parseInt(id) : Date.now(),
-            title: document.getElementById('art-title').value,
-            excerpt: document.getElementById('art-excerpt').value,
-            body: document.getElementById('art-body').value,
-            category: document.getElementById('art-cat').value,
-            author: document.getElementById('art-author').value,
-            date: new Date().toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}),
-            featured: document.getElementById('art-feat').checked
-        };
-
-        if(!newArt.title || !newArt.body) return alert("Fadlan buuxi Title-ka iyo Body-ga");
-
-        let updatedData = id ? allArticles.map(n => n.id === parseInt(id) ? newArt : n) : [newArt, ...allArticles];
-        await saveToGitHub(updatedData, id ? "Update article" : "Add new article");
-    }
-
-    // 5. U DIR GITHUB
-    async function saveToGitHub(data, msg) {
-        document.getElementById('loading').style.display = 'block';
-        try {
-            const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
-                headers: { "Authorization": `token ${GITHUB_TOKEN}` }
-            });
-            const fileData = await res.json();
-            const sha = fileData.sha;
-
-            const updateRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
-                method: "PUT",
-                headers: { "Authorization": `token ${GITHUB_TOKEN}`, "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    message: msg,
-                    content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))),
-                    sha: sha
-                })
-            });
-
-            if(updateRes.ok) {
-                alert("✓ Lagu guulaystay! GitHub waa la update-gareeyay.");
-                resetForm();
-                loadData();
-            } else {
-                const err = await updateRes.json();
-                alert("✘ GitHub ayaa diiday: " + err.message);
-            }
-        } catch (e) { alert("Cilad farsamo ayaa dhacday."); }
-        document.getElementById('loading').style.display = 'none';
-    }
-
-    function deleteArticle(id) {
-        if(confirm("Ma hubtaa inaad tirtirto?")) {
-            const filtered = allArticles.filter(n => n.id !== id);
-            saveToGitHub(filtered, "Delete article");
+        } catch (e) {
+            debug.innerText = "Cilad: " + e.message;
+            content.innerHTML = "<p>Weli wax maqaal ah lama soo gelin ama articles.json ayaa maqan.</p>";
         }
     }
 
-    window.onload = loadData;
+    window.onload = loadArticles;
 </script>
 </body>
 </html>
