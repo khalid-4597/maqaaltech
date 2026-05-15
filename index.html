@@ -1,1 +1,52 @@
-v
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MaqaalTech — AI News</title>
+    <style>
+        :root { --bg: #050a14; --surface: #0b1120; --border: #1e2d45; --cyan: #00e5ff; --text: #e8f0fe; }
+        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .card { background: var(--surface); border: 1px solid var(--border); padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .card h2 { margin-top: 0; color: var(--cyan); }
+        .meta { font-size: 0.8rem; color: #7a92b0; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MAQAALTECH</h1>
+        <div id="main-content">Maqaallada ayaa la rari karaa...</div>
+    </div>
+
+    <script>
+        async function loadArticles() {
+            try {
+                // 'nocache' waxay hubisaa in maqaalka cusub isla markiiba soo baxo
+                const res = await fetch('articles.json?v=' + Date.now());
+                const data = await res.json();
+                const content = document.getElementById('main-content');
+                
+                if (data.length === 0) {
+                    content.innerHTML = "<p>Weli wax maqaal ah lama soo gelin.</p>";
+                    return;
+                }
+
+                content.innerHTML = data.map(n => `
+                    <div class="card">
+                        <div class="meta">${n.category.toUpperCase()} | ${n.date}</div>
+                        <h2>${n.title}</h2>
+                        <p>${n.excerpt}</p>
+                        <div style="font-size:0.95rem; line-height:1.6; border-top:1px solid var(--border); padding-top:10px;">
+                            ${n.body}
+                        </div>
+                        <small style="display:block; margin-top:10px; color:var(--cyan);">By ${n.author}</small>
+                    </div>
+                `).join('');
+            } catch (e) {
+                document.getElementById('main-content').innerHTML = "Cilad ayaa dhacday markii xogta la rari waayay.";
+            }
+        }
+        window.onload = loadArticles;
+    </script>
+</body>
+</html>
