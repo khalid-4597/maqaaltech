@@ -62,50 +62,71 @@
 </div>
 
 <script>
-  async function loadNews() {
-    try {
-      const response = await fetch('articles.json');
-      const news = await response.json();
-      
-      const grid = document.getElementById('news-grid');
-      const featContainer = document.getElementById('feat-card-container');
+ async function loadNews() {
+  try {
+    // Waxaan ku darnay '?v=' iyo waqtiga hadda si aan u hubino in xogta ay tahay mid cusub (Cache Busting)
+    const response = await fetch('articles.json?v=' + Date.now());
+    
+    if (!response.ok) throw new Error("Faylka articles.json lama heli karo");
+    
+    const news = await response.json();
+    
+    // Hubi in xogta ay tahay Array
+    if (!Array.isArray(news)) {
+      console.error("Xogta articles.json ma ahan Array sax ah");
+      return;
+    }
 
-      const feat = news.find(n => n.featured) || news[0];
-      if(feat) {
-        featContainer.innerHTML = `
-          <div class="feat-card" onclick='openModal(${JSON.stringify(feat).replace(/'/g, "&apos;")})'>
-            <span class="card-cat">${feat.category}</span>
-            <h1 style="font-family:var(--font-head); font-size:2.5rem; margin:1rem 0;">${feat.title}</h1>
-            <p style="color:var(--text-muted); font-size:1.1rem;">${feat.excerpt}</p>
-            <div style="margin-top:2rem; font-size:0.9rem;">By ${feat.author} &bull; ${feat.date}</div>
-          </div>`;
-      }
+    const grid = document.getElementById('news-tbody') || document.getElementById('news-grid');
+    const featContainer = document.getElementById('feat-card-container') || document.getElementById('feat-card');
 
-      grid.innerHTML = news.filter(n => n.id !== (feat?feat.id:0)).map(n => `
+    // 1. Featured Article
+    // Waxaan raadineynaa kan ugu dambeeyay ee featured ah
+    const feat = news.find(n => n.featured === true) || news[0];
+
+    if(feat && featContainer) {
+      featContainer.innerHTML = `
+        <div class="feat-card" onclick='openModal(${JSON.stringify(feat).replace(/'/g, "&apos;")})'>
+          <span class="card-cat">${feat.category}</span>
+          <h1 style="font-family:var(--font-head); font-size:2.5rem; margin:1rem 0;">${feat.title}</h1>
+          <p style="color:var(--text-muted); font-size:1.1rem;">${feat.excerpt}</p>
+          <div style="margin-top:2rem; font-size:0.9rem;">By ${feat.author} &bull; ${feat.date}</div>
+        </div>`;
+    }
+
+    // 2. Grid Articles (Dhammaan kuwa kale)
+    if(grid) {
+      grid.innerHTML = news.map(n => `
         <div class="card" onclick='openModal(${JSON.stringify(n).replace(/'/g, "&apos;")})'>
           <span class="card-cat">${n.category}</span>
           <h3 style="margin:10px 0;">${n.title}</h3>
           <p style="color:var(--text-muted); font-size:0.9rem;">${n.excerpt}</p>
+          <small style="color:var(--cyan)">${n.date}</small>
         </div>
       `).join('');
-    } catch (e) { console.error("Error:", e); }
-  }
+    }
 
-  function openModal(n) {
-    document.getElementById('m-cat').innerHTML = `<span class="card-cat">${n.category}</span>`;
-    document.getElementById('m-title').textContent = n.title;
-    document.getElementById('m-meta').textContent = `${n.author} | ${n.date}`;
-    document.getElementById('m-body').innerHTML = n.body;
-    document.getElementById('modal').classList.add('open');
-    document.body.style.overflow = 'hidden';
+  } catch (e) { 
+    console.error("Error loading news:", e);
+    document.getElementById('news-grid').innerHTML = "<p>Waan ka xunnahay, xogta lama soo rari karo hadda.</p>";
   }
+}
 
-  function closeModal() {
-    document.getElementById('modal').classList.remove('open');
-    document.body.style.overflow = '';
-  }
+function openModal(n) {
+  document.getElementById('m-cat').innerHTML = `<span class="card-cat">${n.category}</span>`;
+  document.getElementById('m-title').textContent = n.title;
+  document.getElementById('m-meta').textContent = `${n.author} | ${n.date}`;
+  document.getElementById('m-body').innerHTML = n.body;
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
 
-  window.onload = loadNews;
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+window.onload = loadNews;
 </script>
 </body>
 </html>
