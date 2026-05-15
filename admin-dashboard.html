@@ -6,78 +6,50 @@
 <style>
   :root { --bg:#050a14; --surface:#0b1120; --border:#1e2d45; --cyan:#00e5ff; --text:#e8f0fe; }
   body { background: var(--bg); color: var(--text); font-family: sans-serif; display: flex; margin: 0; }
-  
-  /* Sidebar */
   .sidebar { width: 250px; background: var(--surface); height: 100vh; padding: 2rem; border-right: 1px solid var(--border); position: fixed; }
-  
-  /* Main Content */
   .main { flex: 1; margin-left: 250px; padding: 2rem; max-width: 1000px; }
-  
-  /* Form Style */
   .editor-section { background: var(--surface); padding: 2rem; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 3rem; }
   input, textarea, select { width: 100%; padding: 12px; margin: 10px 0; background: #050a14; border: 1px solid var(--border); color: #fff; border-radius: 8px; box-sizing: border-box; }
   button { padding: 12px 24px; cursor: pointer; border: none; border-radius: 6px; font-weight: bold; transition: 0.3s; }
   .btn-publish { background: var(--cyan); color: #000; width: 100%; font-size: 1rem; }
-  .btn-publish:hover { transform: scale(1.02); }
-
-  /* Table Style */
   table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: var(--surface); }
   th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
-  .action-btn { padding: 5px 10px; margin-right: 5px; font-size: 0.8rem; }
   .edit { background: #22c55e; color: #fff; }
   .delete { background: #ef4444; color: #fff; }
-
   .loading-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:100; align-items:center; justify-content:center; }
 </style>
 </head>
 <body>
 
-<div id="loader" class="loading-overlay">Sug... GitHub ayaa la update-gareynayaa...</div>
+<div id="loader" class="loading-overlay">GitHub ayaa lala hadlayaa...</div>
 
 <div class="sidebar">
   <h2>MaqaalTech</h2>
   <p style="color: var(--cyan)">Admin Panel</p>
   <hr style="border: 0.5px solid var(--border); margin: 2rem 0;">
-  <button onclick="resetForm()" style="width:100%; background:none; color:var(--cyan); border:1px solid var(--cyan); margin-bottom:10px;">+ Create New</button>
+  <button onclick="resetForm()" style="width:100%; background:none; color:var(--cyan); border:1px solid var(--cyan); margin-bottom:10px;">+ Cusub</button>
+  <button onclick="location.href='index.html'" style="width: 100%; background: #1e2d45; color: white; margin-bottom:10px;">Website-ka</button>
   <button onclick="sessionStorage.clear(); location.href='admin-login.html'" style="width: 100%; background: #ef4444; color: white;">Logout</button>
 </div>
 
 <div class="main">
-  <h1>Dashboard</h1>
-  
   <div class="editor-section">
     <h3 id="form-title">Qor Maqaal Cusub</h3>
     <input type="hidden" id="art-id">
-    <input type="text" id="art-title" placeholder="Cinwaanka Maqaalka (Title)">
-    <input type="text" id="art-excerpt" placeholder="Faahfaahin kooban (Excerpt)">
-    <textarea id="art-body" rows="6" placeholder="Qoraalka maqaalka oo dhamaystiran (HTML waa oggol yahay)"></textarea>
-    
+    <input type="text" id="art-title" placeholder="Title">
+    <input type="text" id="art-excerpt" placeholder="Excerpt">
+    <textarea id="art-body" rows="6" placeholder="Qoraalka (HTML waa oggol yahay)"></textarea>
     <div style="display: flex; gap: 10px;">
-      <select id="art-cat">
-        <option value="LLM">LLM</option>
-        <option value="ML">Machine Learning</option>
-        <option value="Policy">AI Policy</option>
-        <option value="Robotics">Robotics</option>
-      </select>
+      <select id="art-cat"><option value="LLM">LLM</option><option value="ML">ML</option><option value="Policy">Policy</option><option value="Robotics">Robotics</option></select>
       <input type="text" id="art-author" placeholder="Qoraaga" style="flex:1">
     </div>
-    
-    <label style="display:block; margin:10px 0;">
-      <input type="checkbox" id="art-feat" style="width:auto;"> Featured (Maqaalka sare)
-    </label>
-    
+    <label><input type="checkbox" id="art-feat" style="width:auto;"> Featured</label>
     <button class="btn-publish" onclick="handlePublish()">Publish to GitHub</button>
   </div>
 
   <h2>Maqaallada Jira</h2>
   <table>
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>Category</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
+    <thead><tr><th>Title</th><th>Category</th><th>Actions</th></tr></thead>
     <tbody id="news-tbody"></tbody>
   </table>
 </div>
@@ -85,7 +57,6 @@
 <script>
   if(sessionStorage.getItem('maqaaltech_admin') !== '1') { window.location.href = 'admin-login.html'; }
 
-  // ── CONFIGURATION (Hubi in kuwani sax yihiin) ──
   const GITHUB_TOKEN = "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"; 
   const REPO_OWNER = "khalid-4597";
   const REPO_NAME = "maqaaltech";
@@ -93,10 +64,9 @@
 
   let allArticles = [];
 
-  // 1. SOO QAAD XOGTA
   async function loadData() {
     try {
-      const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
+      const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}?v=${Date.now()}`, {
         headers: { "Authorization": `token ${GITHUB_TOKEN}` }
       });
       const data = await res.json();
@@ -109,17 +79,14 @@
     const tbody = document.getElementById('news-tbody');
     tbody.innerHTML = allArticles.map(n => `
       <tr>
-        <td>${n.title}</td>
-        <td>${n.category}</td>
+        <td>${n.title}</td><td>${n.category}</td>
         <td>
-          <button class="action-btn edit" onclick="prepareEdit(${n.id})">Edit</button>
-          <button class="action-btn delete" onclick="deleteArticle(${n.id})">Delete</button>
+          <button class="edit" onclick="prepareEdit(${n.id})">Edit</button>
+          <button class="delete" onclick="deleteArticle(${n.id})">Del</button>
         </td>
-      </tr>
-    `).join('');
+      </tr>`).join('');
   }
 
-  // 2. DIYAARI EDIT
   function prepareEdit(id) {
     const art = allArticles.find(n => n.id === id);
     document.getElementById('art-id').value = art.id;
@@ -129,7 +96,7 @@
     document.getElementById('art-cat').value = art.category;
     document.getElementById('art-author').value = art.author;
     document.getElementById('art-feat').checked = art.featured;
-    document.getElementById('form-title').innerText = "Wax ka beddel Maqaalka";
+    document.getElementById('form-title').innerText = "Beddel Maqaalka";
     window.scrollTo(0,0);
   }
 
@@ -137,10 +104,10 @@
     document.getElementById('art-id').value = '';
     document.getElementById('art-title').value = '';
     document.getElementById('art-body').value = '';
+    document.getElementById('art-excerpt').value = '';
     document.getElementById('form-title').innerText = "Qor Maqaal Cusub";
   }
 
-  // 3. PUBLISH (CREATE AMA UPDATE)
   async function handlePublish() {
     const id = document.getElementById('art-id').value;
     const newArt = {
@@ -150,21 +117,15 @@
       body: document.getElementById('art-body').value,
       category: document.getElementById('art-cat').value,
       author: document.getElementById('art-author').value,
-      date: new Date().toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}),
+      date: new Date().toLocaleDateString(),
       featured: document.getElementById('art-feat').checked
     };
 
-    let updatedData;
-    if(id) {
-      updatedData = allArticles.map(n => n.id === parseInt(id) ? newArt : n);
-    } else {
-      updatedData = [newArt, ...allArticles];
-    }
-
+    // Halkan ayaan ku saxnay inuu hoos maro [...hore, cusub]
+    let updatedData = id ? allArticles.map(n => n.id === parseInt(id) ? newArt : n) : [...allArticles, newArt];
     await saveToGitHub(updatedData, id ? "Update article" : "Add new article");
   }
 
-  // 4. U DIR GITHUB
   async function saveToGitHub(data, msg) {
     document.getElementById('loader').style.display = 'flex';
     try {
@@ -174,7 +135,7 @@
       const fileData = await res.json();
       const sha = fileData.sha;
 
-      await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
+      const pushRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
         method: "PUT",
         headers: { "Authorization": `token ${GITHUB_TOKEN}`, "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -184,16 +145,17 @@
         })
       });
 
-      alert("✓ Lagu guulaystay!");
-      resetForm();
-      loadData();
+      if(pushRes.ok) {
+        alert("✓ Lagu guulaystay!");
+        resetForm();
+        loadData();
+      }
     } catch (e) { alert("Cilad baa dhacday!"); }
     document.getElementById('loader').style.display = 'none';
   }
 
-  // 5. DELETE
   function deleteArticle(id) {
-    if(confirm("Ma hubtaa?")) {
+    if(confirm("Ma tirtirtaa?")) {
       const filtered = allArticles.filter(n => n.id !== id);
       saveToGitHub(filtered, "Delete article");
     }
