@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>Admin Login — MaqaalTech</title>
+<style>
+  body { background: #050a14; color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; }
+  .login-card { background: #0b1120; padding: 2rem; border-radius: 15px; border: 1px solid #1e2d45; width: 350px; }
+  input { width: 100%; padding: 12px; margin: 10px 0; background: #050a14; border: 1px solid #1e2d45; color: #fff; border-radius: 5px; }
+  button { width: 100%; padding: 12px; background: #00e5ff; border: none; color: #000; font-weight: bold; border-radius: 5px; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div class="login-card">
+  <h2 style="text-align: center; color: #00e5ff;">Admin Login</h2>
+  <input type="email" id="email" placeholder="Email (admin@maqaaltech.com)">
+  <input type="password" id="password" placeholder="Password">
+  <button onclick="login()">Sign In</button>
+  <p id="msg" style="color: #ff4d6d; font-size: 0.8rem; text-align: center; margin-top: 10px;"></p>
+</div>
+
+<script>
+  function login() {
+    const email = document.getElementById('email').value;
+    const pwd = document.getElementById('password').value;
+    
+    // Login-kaagu waa kan:
+    if(email === 'admin@maqaaltech.com' && pwd === 'Admin@2025') {
+      sessionStorage.setItem('maqaaltech_admin', '1');
+      window.location.href = 'admin-dashboard.html';
+    } else {
+      document.getElementById('msg').textContent = "Cidna uma ogola! Hubi Password-ka.";
+    }
+  }
+</script>
+</body>
+</html>

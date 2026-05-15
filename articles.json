@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "title": "OpenAI oo Soo Bandhigtay GPT-5 oo leh Caqli ka Sarreeya kii Hore",
+    "excerpt": "Qaabka cusub ee GPT-5 ayaa muujiyay awood layaab leh oo xagga xallinta mashaakilaadka adag ee xisaabta iyo koodhka.",
+    "body": "Shirkadda OpenAI ayaa si rasmi ah u soo saartay GPT-5, kaas oo ah moodelkoodii ugu awoodda badnaa ilaa hadda. Moodelkani wuxuu isbeddel weyn ku sameeyay habka fikirka mashiinka, qorista koodhka, iyo falanqaynta sayniska. GPT-5 wuxuu ka fiican yahay moodelladii hore ee dhinaca sababaynta caqliga. Waxaa hadda lagu heli karaa API ahaan, dhowra toddobaad ka dibna waxaa heli doona isticmaalyada ChatGPT.",
+    "category": "LLM",
+    "author": "Maqaaltech Admin",
+    "date": "May 14, 2026",
+    "featured": true
+  },
+  {
+    "id": 2,
+    "title": "Google DeepMind oo soo saartay AlphaFold 3 oo wax ka beddeli doona Dawooyinka",
+    "excerpt": "Moodelkan cusub ayaa saadaalin kara sida borotiinnadu ula falgalaan unugyada yaryar, taas oo dedejinaysa helitaanka dawooyin cusub.",
+    "body": "Google DeepMind ayaa shaaca ka qaaday AlphaFold 3, kaas oo ka caawinaya saynisyahannada inay fahmaan isdhexgalka borotiinnada iyo dawooyinka, DNA-da, iyo RNA-da. Tani waxay soo gaabinaysaa wakhtiga ay qaadato helitaanka dawada, taasoo markii hore qaadan jirtay sannado haddana lagu soo koobi karo bilo kooban.",
+    "category": "ML",
+    "author": "Maqaaltech Editor",
+    "date": "May 12, 2026",
+    "featured": true
+  },
+  {
+    "id": 3,
+    "title": "Nidaamka 'Constitutional AI' ee Anthropic oo la casriyeeyay",
+    "excerpt": "Habka cusub ayaa u oggolaanaya koodhka Claude inuu ka fikiro arrimaha anshaxa isagoo tixgelinaya dhaqamada kala duwan.",
+    "body": "Anthropic ayaa daabacday cilmi-baaris ku saabsan casriyeynta Constitutional AI. Habkan cusub wuxuu sare u qaadayaa badqabka AI-ga iyo inuu noqdo mid waxtar badan oo aan si fudud loo marin habaabin karin, isagoo tixgelinaya qiyamka iyo anshaxa aadanaha.",
+    "category": "Policy",
+    "author": "Maqaaltech Tech",
+    "date": "May 11, 2026",
+    "featured": false
+  },
+  {
+    "id": 4,
+    "title": "Boston Dynamics oo soo bandhigtay Atlas 2.0 oo AI ku shaqaynaya",
+    "excerpt": "Robot-kan qaabka dadka u eg ayaa hadda isticmaala nidaamka 'Neural Networks' si uu u socdo una shaqeeyo.",
+    "body": "Boston Dynamics ayaa soo bandhigtay Atlas 2.0, kaas oo gabi ahaanba laga beddelay habkii hore ee lagu xukumi jiray. Hadda wuxuu isticmaalaa hal shabakad oo AI ah (Neural Network) si uu u koontoolo xubnihiisa oo dhan. Tijaabadii la sameeyay, Atlas wuxuu ku guuleystay inuu qabto shaqooyin adag oo bakhaarada dhexdiisa ah isagoo iskii u socda.",
+    "category": "Robotics",
+    "author": "Maqaaltech Admin",
+    "date": "May 10, 2026",
+    "featured": false
+  },
+  {
+    "id": 5,
+    "title": "Xeerka AI ee Midowga Yurub oo si rasmi ah u dhaqan galay",
+    "excerpt": "Xeerarkii ugu horreeyay ee lagu xakameynayo AI ayaa laga hirgeliyay Yurub, shirkadihii jabiyaana waxay la kulmi doonaan ganaaxyo culus.",
+    "body": "Midowga Yurub ayaa bilaabay dhaqan-gelinta sharciga AI Act. Shirkadaha isticmaala nidaamyada AI ee khatarta sare leh waa inay u hoggaansamaan sharciyada hufnaanta iyo diwaangelinta. Shirkadaha ku fashilma xeerkan waxay wajihi karaan ganaax gaaraya ilaa 6% dakhligooda sannadlaha ah.",
+    "category": "Policy",
+    "author": "Maqaaltech Law",
+    "date": "May 9, 2026",
+    "featured": false
+  },
+  {
+    "id": 6,
+    "title": "NVIDIA oo Bilowday Rarista Chip-ka cusub ee Blackwell B200",
+    "excerpt": "Accelerator-ka cusub ee NVIDIA wuxuu 4 laab ka dheereeyaa kii hore ee H100, isagoo isticmaalaya koronto yar.",
+    "body": "NVIDIA ayaa bilowday inay u dirto macaamiisheeda caalamka chip-ka cusub ee Blackwell B200. Tijaabooyinkii u dambeeyay waxay muujiyeen inuu 4 jeer ka dhaqso badan yahay tababarka moodellada AI ee waaweyn marka loo eego H100, sidoo kale wuxuu badbaadiyaa 40% korontada.",
+    "category": "ML",
+    "author": "Maqaaltech Tech",
+    "date": "May 8, 2026",
+    "featured": false
+  }
+]

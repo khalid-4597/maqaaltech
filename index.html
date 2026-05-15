@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MaqaalTech — AI News</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #050a14; --surface: #0b1120; --surface2: #111827;
+    --border: #1e2d45; --cyan: #00e5ff; --text: #e8f0fe;
+    --text-muted: #7a92b0; --font-head: 'Syne', sans-serif;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; margin: 0; }
+  header { padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+  .logo { font-family: var(--font-head); font-weight: 800; font-size: 1.5rem; color: var(--cyan); text-decoration: none; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 1rem 2rem; }
+  .section-title { font-family: var(--font-head); color: var(--cyan); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1.5rem; font-size: 1rem; }
+  
+  .feat-card { 
+    background: linear-gradient(135deg, var(--surface), var(--surface2)); 
+    border: 1px solid var(--border); border-radius: 24px; padding: 3rem; 
+    margin-bottom: 3rem; cursor: pointer; transition: 0.4s;
+  }
+  .feat-card:hover { border-color: var(--cyan); transform: translateY(-5px); }
+  
+  .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; }
+  .card { background: var(--surface); border: 1px solid var(--border); padding: 1.5rem; border-radius: 16px; cursor: pointer; transition: 0.3s; }
+  .card:hover { border-color: var(--cyan); transform: translateY(-5px); }
+  .card-cat { color: var(--cyan); font-size: 0.75rem; font-weight: bold; text-transform: uppercase; margin-bottom: 0.5rem; display: block; }
+
+  #modal { position: fixed; inset: 0; background: rgba(5,10,20,0.98); display: none; z-index: 1000; overflow-y: auto; padding: 40px 20px; }
+  #modal.open { display: block; }
+  .modal-content { max-width: 800px; margin: 0 auto; line-height: 1.8; }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="#" class="logo">MAQAALTECH</a>
+  <a href="admin-login.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem; border: 1px solid var(--border); padding: 5px 15px; border-radius: 5px;">Admin Login</a>
+</header>
+
+<div class="container">
+  <div id="featured-section">
+    <h2 class="section-title">Featured Story</h2>
+    <div id="feat-card-container"></div>
+  </div>
+
+  <h2 class="section-title">Latest News</h2>
+  <div class="news-grid" id="news-grid"></div>
+</div>
+
+<div id="modal">
+  <div class="modal-content">
+    <button onclick="closeModal()" style="background:none; border:1px solid var(--border); color:var(--cyan); padding:8px 16px; border-radius:5px; cursor:pointer; margin-bottom:2rem;">← Back</button>
+    <div id="m-cat"></div>
+    <h1 id="m-title" style="font-family: var(--font-head); font-size: 2.5rem; margin: 1rem 0;"></h1>
+    <p id="m-meta" style="color: var(--text-muted); margin-bottom: 2rem;"></p>
+    <div id="m-body" style="font-size: 1.2rem; color: #cbd5e1;"></div>
+  </div>
+</div>
+
+<script>
+  async function loadNews() {
+    try {
+      const response = await fetch('articles.json');
+      const news = await response.json();
+      
+      const grid = document.getElementById('news-grid');
+      const featContainer = document.getElementById('feat-card-container');
+
+      const feat = news.find(n => n.featured) || news[0];
+      if(feat) {
+        featContainer.innerHTML = `
+          <div class="feat-card" onclick='openModal(${JSON.stringify(feat).replace(/'/g, "&apos;")})'>
+            <span class="card-cat">${feat.category}</span>
+            <h1 style="font-family:var(--font-head); font-size:2.5rem; margin:1rem 0;">${feat.title}</h1>
+            <p style="color:var(--text-muted); font-size:1.1rem;">${feat.excerpt}</p>
+            <div style="margin-top:2rem; font-size:0.9rem;">By ${feat.author} &bull; ${feat.date}</div>
+          </div>`;
+      }
+
+      grid.innerHTML = news.filter(n => n.id !== (feat?feat.id:0)).map(n => `
+        <div class="card" onclick='openModal(${JSON.stringify(n).replace(/'/g, "&apos;")})'>
+          <span class="card-cat">${n.category}</span>
+          <h3 style="margin:10px 0;">${n.title}</h3>
+          <p style="color:var(--text-muted); font-size:0.9rem;">${n.excerpt}</p>
+        </div>
+      `).join('');
+    } catch (e) { console.error("Error:", e); }
+  }
+
+  function openModal(n) {
+    document.getElementById('m-cat').innerHTML = `<span class="card-cat">${n.category}</span>`;
+    document.getElementById('m-title').textContent = n.title;
+    document.getElementById('m-meta').textContent = `${n.author} | ${n.date}`;
+    document.getElementById('m-body').innerHTML = n.body;
+    document.getElementById('modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  window.onload = loadNews;
+</script>
+</body>
+</html>
