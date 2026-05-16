@@ -20,16 +20,6 @@
     "featured": true
   },
   {
-    "id": 2,
-    "title": "Google DeepMind's AlphaFold 3 Unlocks Protein-Drug Interactions",
-    "excerpt": "The breakthrough model can now predict how proteins interact with small molecules, dramatically accelerating drug discovery pipelines.",
-    "body": "Google DeepMind has unveiled AlphaFold 3, a major upgrade that extends beyond protein structure prediction to modeling interactions between proteins and small molecules including drugs, DNA, and RNA. This capability could compress drug discovery timelines from years to months.",
-    "category": "ML",
-    "author": "MaqaalTech Staff",
-    "date": "Dec 12, 2025",
-    "featured": true
-  },
-  {
     "id": 3,
     "title": "Anthropic's Constitutional AI Gets a Major Upgrade",
     "excerpt": "The new framework enables Claude to reason about ethical dilemmas with greater nuance and consistency across diverse cultural contexts.",
