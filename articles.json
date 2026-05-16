@@ -20,16 +20,6 @@
     "featured": false
   },
   {
-    "id": 1,
-    "title": "OpenAI Releases GPT-5 with Unprecedented Reasoning Capabilities",
-    "excerpt": "The latest flagship model demonstrates near-human performance across complex multi-step reasoning tasks, setting new benchmarks in mathematics and coding.",
-    "body": "OpenAI has officially released GPT-5, its most powerful model to date. The model demonstrates remarkable improvements in chain-of-thought reasoning, coding, and scientific analysis. In internal benchmarks, GPT-5 outperforms previous models by a significant margin on tasks requiring multi-step logical deduction. The release marks a pivotal moment in the development of artificial general intelligence.",
-    "category": "LLM",
-    "author": "MaqaalTech Staff",
-    "date": "Dec 14, 2025",
-    "featured": true
-  },
-  {
     "id": 3,
     "title": "Anthropic's Constitutional AI Gets a Major Upgrade",
     "excerpt": "The new framework enables Claude to reason about ethical dilemmas with greater nuance and consistency across diverse cultural contexts.",
