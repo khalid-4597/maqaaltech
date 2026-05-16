@@ -60,3 +60,14 @@
     "featured": false
   }
 ]
+
+ {
+    "id": 7,
+    "title": "AI",
+    "excerpt": maanta iyo heerka uu marayo AI ga",
+    "body": maanta ai wuxu marayaherki u dambesay iyado ju surto galineso inad dhaman howlahada u dirsato ",
+    "category": "ML",
+    "author": "Khalid",
+    "date": "Dec 16, 2025",
+    "featured": false
+  },
