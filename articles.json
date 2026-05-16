@@ -10,16 +10,6 @@
     "featured": false
   },
   {
-    "id": 1778969420642,
-    "title": "it",
-    "excerpt": "mmmmmmmmmmm",
-    "body": "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
-    "category": "Robotics",
-    "author": "MaqaalTech Staff",
-    "date": "May 16, 2026",
-    "featured": false
-  },
-  {
     "id": 4,
     "title": "Boston Dynamics Unveils Atlas 2.0 with Full-Body AI Control",
     "excerpt": "The humanoid robot now uses end-to-end neural networks for locomotion and manipulation, eliminating hand-crafted control systems.",
