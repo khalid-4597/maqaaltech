@@ -20,16 +20,6 @@
     "featured": false
   },
   {
-    "id": 3,
-    "title": "Anthropic's Constitutional AI Gets a Major Upgrade",
-    "excerpt": "The new framework enables Claude to reason about ethical dilemmas with greater nuance and consistency across diverse cultural contexts.",
-    "body": "Anthropic has published research on a significantly enhanced version of Constitutional AI. The updated approach incorporates multi-perspective moral reasoning and shows improved resistance to jailbreaks while maintaining helpfulness.",
-    "category": "Policy",
-    "author": "MaqaalTech Staff",
-    "date": "Dec 11, 2025",
-    "featured": false
-  },
-  {
     "id": 4,
     "title": "Boston Dynamics Unveils Atlas 2.0 with Full-Body AI Control",
     "excerpt": "The humanoid robot now uses end-to-end neural networks for locomotion and manipulation, eliminating hand-crafted control systems.",
