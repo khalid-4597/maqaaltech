@@ -221,7 +221,9 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:48px
     try{
       const r=await fetch(RAW_URL+'?t='+Date.now());
       if(!r.ok)throw new Error();
-      allArticles=await r.json();
+      const raw=await r.json();
+      // ✅ Cusub ugu hore — ID weyn = ugu cusub
+      allArticles=raw.slice().sort((a,b)=>b.id-a.id);
       document.getElementById('cnt-articles').textContent=allArticles.length;
       renderFeatured(allArticles);
       buildFilters(allArticles);
@@ -234,9 +236,12 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:48px
 
   function catClass(c){return 'cat-'+c;}
 
-  // ✅ FIX: renderFeatured — maqaalada si toos ah u muujiya
+  // ✅ Featured: featured=true maqaalada hore, ka dibna cusub ugu hore — 3 keliya card section
   function renderFeatured(articles){
-    const items=[...articles.filter(a=>a.featured),...articles.filter(a=>!a.featured)].slice(0,3);
+    const featured=articles.filter(a=>a.featured);
+    const notFeatured=articles.filter(a=>!a.featured);
+    // Featured maqaalada hore, ka dibna kuwa kale — labaduba order cusub ugu hore (sort hore ku dhamaatay)
+    const items=[...featured,...notFeatured].slice(0,3);
     const el=document.getElementById('featured-grid');
     el.innerHTML=items.map((a,i)=>`
       <div class="card${i===0?' card-hero':''}" onclick="openModal(${a.id})">
@@ -259,11 +264,10 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:48px
   function filterBy(cat,btn){
     document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
     btn.classList.add('active');
-    // ✅ FIX: category filter oo si sax ah u shaqeysa
     renderNewsList(cat==='All' ? allArticles : allArticles.filter(a=>a.category===cat));
   }
 
-  // ✅ FIX: renderNewsList — maqaalada si toos ah u muujiya, visibility problem la xaliyay
+  // ✅ DHAMAAN maqaalada soo bandhig — xad ma jiro, cusub ugu hore
   function renderNewsList(articles){
     const el=document.getElementById('news-list');
     el.innerHTML=articles.map((a,i)=>`
