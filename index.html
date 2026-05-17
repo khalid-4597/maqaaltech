@@ -236,12 +236,9 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:48px
 
   function catClass(c){return 'cat-'+c;}
 
-  // ✅ Featured: featured=true maqaalada hore, ka dibna cusub ugu hore — 3 keliya card section
+  // ✅ Featured: featured=true maqaalada KALIYA
   function renderFeatured(articles){
-    const featured=articles.filter(a=>a.featured);
-    const notFeatured=articles.filter(a=>!a.featured);
-    // Featured maqaalada hore, ka dibna kuwa kale — labaduba order cusub ugu hore (sort hore ku dhamaatay)
-    const items=[...featured,...notFeatured].slice(0,3);
+    const items=articles.filter(a=>a.featured);
     const el=document.getElementById('featured-grid');
     el.innerHTML=items.map((a,i)=>`
       <div class="card${i===0?' card-hero':''}" onclick="openModal(${a.id})">
