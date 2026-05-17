@@ -109,8 +109,8 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:48px
 .modal-body p{margin-bottom:16px;}
 .toast{position:fixed;bottom:30px;right:30px;background:var(--surface);border:1px solid var(--cyan-glow);border-radius:10px;padding:14px 20px;font-size:14px;font-weight:500;color:var(--cyan);box-shadow:0 8px 32px rgba(0,0,0,0.5);z-index:300;transform:translateY(100px);opacity:0;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);}
 .toast.show{transform:translateY(0);opacity:1;}
-.reveal{opacity:0;transform:translateY(30px);transition:opacity 0.6s ease,transform 0.6s ease;}
-.reveal.visible{opacity:1;transform:none;}
+/* ✅ FIX: reveal waxay si toos ah u muuqataa — filter ma jariyo */
+.reveal{opacity:1;transform:none;}
 @media(max-width:900px){nav{padding:0 20px;}.nav-links{display:none;}.hero{padding:100px 20px 60px;}section{padding:60px 20px;}.featured-grid{grid-template-columns:1fr;}.card-hero{grid-row:span 1;}footer{grid-template-columns:1fr 1fr;}.footer-bottom{flex-direction:column;gap:8px;}.news-item{grid-template-columns:60px 1fr 24px;}}
 </style>
 </head>
@@ -234,9 +234,11 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:48px
 
   function catClass(c){return 'cat-'+c;}
 
+  // ✅ FIX: renderFeatured — maqaalada si toos ah u muujiya
   function renderFeatured(articles){
     const items=[...articles.filter(a=>a.featured),...articles.filter(a=>!a.featured)].slice(0,3);
-    document.getElementById('featured-grid').innerHTML=items.map((a,i)=>`
+    const el=document.getElementById('featured-grid');
+    el.innerHTML=items.map((a,i)=>`
       <div class="card${i===0?' card-hero':''}" onclick="openModal(${a.id})">
         <div class="card-img"><div class="card-img-placeholder">${catEmoji[a.category]||'💡'}</div></div>
         <div class="card-body">
@@ -255,12 +257,16 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:48px
   }
 
   function filterBy(cat,btn){
-    document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));btn.classList.add('active');
-    renderNewsList(cat==='All'?allArticles:allArticles.filter(a=>a.category===cat));
+    document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    // ✅ FIX: category filter oo si sax ah u shaqeysa
+    renderNewsList(cat==='All' ? allArticles : allArticles.filter(a=>a.category===cat));
   }
 
+  // ✅ FIX: renderNewsList — maqaalada si toos ah u muujiya, visibility problem la xaliyay
   function renderNewsList(articles){
-    document.getElementById('news-list').innerHTML=articles.map((a,i)=>`
+    const el=document.getElementById('news-list');
+    el.innerHTML=articles.map((a,i)=>`
       <div class="news-item" onclick="openModal(${a.id})">
         <div class="news-num">${String(i+1).padStart(2,'0')}</div>
         <div>
@@ -293,9 +299,6 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:48px
     const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
     setTimeout(()=>t.classList.remove('show'),3200);
   }
-
-  new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible');}),{threshold:0.1})
-    .observe(document.querySelector('.reveal'));
 
   fetchArticles();
 </script>
