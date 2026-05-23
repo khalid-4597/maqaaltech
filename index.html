@@ -14,7 +14,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 #cursor{width:10px;height:10px;background:var(--cyan);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:10000;box-shadow:0 0 12px var(--cyan);}
 #cursor-ring{width:32px;height:32px;border:1.5px solid var(--cyan-glow);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transition:all 0.18s ease;}
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:64px;background:rgba(5,10,20,0.88);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);}
-.nav-logo{font-family:var(--font-head);font-size:22px;font-weight:800;color:var(--text);text-decoration:none;}
+.nav-logo{font-family:var(--font-head);font-size:22px;font-weight:800;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:10px;}
+.nav-logo img{height:38px;width:auto;display:block;}
 .nav-logo span{color:var(--cyan);}
 .nav-links{display:flex;gap:28px;align-items:center;}
 .nav-links a{color:var(--text-muted);text-decoration:none;font-size:13px;font-weight:500;letter-spacing:0.5px;text-transform:uppercase;transition:color 0.2s;}
@@ -66,10 +67,8 @@ section{padding:80px 40px;}
 .card-meta{display:flex;align-items:center;gap:12px;font-size:11px;color:var(--text-muted);}
 .card-meta-dot{width:3px;height:3px;background:var(--border);border-radius:50%;}
 .news-list{display:flex;flex-direction:column;max-width:1200px;}
-.news-item{display:grid;grid-template-columns:80px 1fr auto;gap:20px;align-items:center;padding:20px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:all 0.2s;}
+.news-item{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;padding:20px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:all 0.2s;}
 .news-item:hover{background:var(--surface);padding-left:14px;padding-right:14px;margin:0 -14px;border-radius:8px;border-bottom-color:transparent;}
-.news-num{font-family:var(--font-head);font-size:30px;font-weight:800;color:var(--border);line-height:1;transition:color 0.2s;}
-.news-item:hover .news-num{color:var(--cyan);}
 .news-title{font-family:var(--font-head);font-size:16px;font-weight:700;margin-bottom:4px;transition:color 0.2s;}
 .news-item:hover .news-title{color:var(--cyan);}
 .news-meta{font-size:12px;color:var(--text-muted);}
@@ -91,7 +90,7 @@ section{padding:80px 40px;}
 .btn-cyan{background:var(--cyan);color:#000;border:none;border-radius:8px;padding:12px 24px;font-weight:700;font-family:var(--font-head);font-size:13px;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;white-space:nowrap;}
 .btn-cyan:hover{transform:translateY(-2px);box-shadow:0 8px 24px var(--cyan-glow);}
 footer{background:var(--surface);border-top:1px solid var(--border);padding:48px 40px;display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;}
-.footer-brand .nav-logo{font-size:24px;display:block;margin-bottom:12px;}
+.footer-brand .nav-logo{font-size:24px;display:flex;margin-bottom:12px;}
 .footer-brand p{font-size:13px;color:var(--text-muted);line-height:1.7;}
 .footer-col h4{font-family:var(--font-head);font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:16px;}
 .footer-col a{display:block;color:var(--text-muted);text-decoration:none;font-size:13px;margin-bottom:10px;transition:color 0.2s;}
@@ -109,9 +108,8 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:48px
 .modal-body p{margin-bottom:16px;}
 .toast{position:fixed;bottom:30px;right:30px;background:var(--surface);border:1px solid var(--cyan-glow);border-radius:10px;padding:14px 20px;font-size:14px;font-weight:500;color:var(--cyan);box-shadow:0 8px 32px rgba(0,0,0,0.5);z-index:300;transform:translateY(100px);opacity:0;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);}
 .toast.show{transform:translateY(0);opacity:1;}
-/* ✅ FIX: reveal waxay si toos ah u muuqataa — filter ma jariyo */
 .reveal{opacity:1;transform:none;}
-@media(max-width:900px){nav{padding:0 20px;}.nav-links{display:none;}.hero{padding:100px 20px 60px;}section{padding:60px 20px;}.featured-grid{grid-template-columns:1fr;}.card-hero{grid-row:span 1;}footer{grid-template-columns:1fr 1fr;}.footer-bottom{flex-direction:column;gap:8px;}.news-item{grid-template-columns:60px 1fr 24px;}}
+@media(max-width:900px){nav{padding:0 20px;}.nav-links{display:none;}.hero{padding:100px 20px 60px;}section{padding:60px 20px;}.featured-grid{grid-template-columns:1fr;}.card-hero{grid-row:span 1;}footer{grid-template-columns:1fr 1fr;}.footer-bottom{flex-direction:column;gap:8px;}.news-item{grid-template-columns:1fr 24px;}}
 </style>
 </head>
 <body>
@@ -119,14 +117,16 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:48px
 <div id="cursor-ring"></div>
 
 <script>
-  // ✅ DIYAAR — WAXBA HA BEDDELIN
   const GITHUB_USERNAME = "khalid-4597";
   const GITHUB_REPO     = "maqaaltech";
   const RAW_URL = "https://raw.githubusercontent.com/" + GITHUB_USERNAME + "/" + GITHUB_REPO + "/main/articles.json";
 </script>
 
 <nav>
-  <a href="index.html" class="nav-logo">Maqaal<span>Tech</span></a>
+  <a href="index.html" class="nav-logo">
+    <img src="logo.png" alt="MaqaalTech Logo"/>
+    Maqaal<span>Tech</span>
+  </a>
   <div class="nav-links">
     <a href="#featured">Featured</a>
     <a href="#latest">Latest</a>
@@ -179,7 +179,10 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:48px
 
 <footer>
   <div class="footer-brand">
-    <a href="index.html" class="nav-logo">Maqaal<span>Tech</span></a>
+    <a href="index.html" class="nav-logo">
+      <img src="logo.png" alt="MaqaalTech Logo" style="height:32px;width:auto;"/>
+      Maqaal<span>Tech</span>
+    </a>
     <p>Your definitive source for AI news, research breakthroughs, and technology insights.</p>
   </div>
   <div class="footer-col"><h4>Topics</h4><a href="#">Machine Learning</a><a href="#">Large Language Models</a><a href="#">Robotics</a><a href="#">AI Policy</a></div>
@@ -222,7 +225,6 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:48px
       const r=await fetch(RAW_URL+'?t='+Date.now());
       if(!r.ok)throw new Error();
       const raw=await r.json();
-      // ✅ Cusub ugu hore — ID weyn = ugu cusub
       allArticles=raw.slice().sort((a,b)=>b.id-a.id);
       document.getElementById('cnt-articles').textContent=allArticles.length;
       renderFeatured(allArticles);
@@ -236,7 +238,6 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:48px
 
   function catClass(c){return 'cat-'+c;}
 
-  // ✅ Featured: featured=true maqaalada KALIYA
   function renderFeatured(articles){
     const items=articles.filter(a=>a.featured);
     const el=document.getElementById('featured-grid');
@@ -264,12 +265,10 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:48px
     renderNewsList(cat==='All' ? allArticles : allArticles.filter(a=>a.category===cat));
   }
 
-  // ✅ DHAMAAN maqaalada soo bandhig — xad ma jiro, cusub ugu hore
   function renderNewsList(articles){
     const el=document.getElementById('news-list');
-    el.innerHTML=articles.map((a,i)=>`
+    el.innerHTML=articles.map((a)=>`
       <div class="news-item" onclick="openModal(${a.id})">
-        <div class="news-num">${String(i+1).padStart(2,'0')}</div>
         <div>
           <div class="news-title">${a.title}</div>
           <div class="news-meta"><span class="card-cat ${catClass(a.category)}" style="margin-right:8px">${a.category}</span>${a.author} · ${a.date}</div>
