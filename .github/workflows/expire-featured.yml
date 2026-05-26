@@ -1,0 +1,63 @@
+name: Expire Featured Articles
+
+# Runs every hour and also on manual trigger from Actions tab
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  expire:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # needed to push the updated articles.json
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Expire old featured articles
+        run: |
+          node - << 'EOF'
+          const fs  = require('fs');
+          const TTL = 24 * 60 * 60 * 1000; // 24 hours in ms
+          const path = 'articles.json';
+
+          if (!fs.existsSync(path)) {
+            console.log('articles.json not found, skipping.');
+            process.exit(0);
+          }
+
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          let changed = false;
+          const now = Date.now();
+
+          data.forEach(article => {
+            if (article.featured && article.featuredAt) {
+              const age = now - new Date(article.featuredAt).getTime();
+              if (age >= TTL) {
+                article.featured   = false;
+                article.featuredAt = null;
+                changed = true;
+                console.log(`Expired featured: "${article.title}" (id ${article.id})`);
+              }
+            }
+          });
+
+          if (changed) {
+            fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+            console.log('articles.json updated.');
+          } else {
+            console.log('No articles to expire.');
+          }
+          EOF
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git diff --quiet && echo "Nothing to commit." || (
+            git add articles.json
+            git commit -m "chore: auto-expire featured articles [skip ci]"
+            git push
+          )
