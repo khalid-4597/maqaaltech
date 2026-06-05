@@ -3,488 +3,132 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Admin Dashboard — MaqaalTech</title>
+<title>Admin Login — MaqaalTech</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
-:root{--bg:#050a14;--surface:#0b1120;--surface2:#111827;--border:#1e2d45;--cyan:#00e5ff;--cyan-dim:rgba(0,229,255,0.12);--cyan-glow:rgba(0,229,255,0.35);--green:#00ff94;--orange:#ff6b35;--red:#ff4d6d;--text:#e8f0fe;--text-muted:#7a92b0;--font-head:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;--sidebar:240px;}
+:root{--bg:#050a14;--surface:#0b1120;--surface2:#111827;--border:#1e2d45;--cyan:#00e5ff;--cyan-dim:rgba(0,229,255,0.12);--cyan-glow:rgba(0,229,255,0.35);--text:#e8f0fe;--text-muted:#7a92b0;--error:#ff4d6d;--font-head:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-height:100vh;overflow-x:hidden;}
-body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.025) 2px,rgba(0,0,0,0.025) 4px);pointer-events:none;z-index:9999;}
-.dash-wrap{display:flex;min-height:100vh;}
-.sidebar{width:var(--sidebar);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50;}
-.sidebar-logo{padding:22px 24px;border-bottom:1px solid var(--border);font-family:var(--font-head);font-size:18px;font-weight:800;}
-.sidebar-logo span{color:var(--cyan);}
-.sidebar-menu{flex:1;padding:16px 0;}
-.menu-item{display:flex;align-items:center;gap:12px;padding:11px 24px;cursor:pointer;font-size:14px;font-weight:500;color:var(--text-muted);border-left:2px solid transparent;transition:all 0.2s;text-decoration:none;background:none;width:100%;border-top:none;border-right:none;border-bottom:none;font-family:var(--font-body);}
-.menu-item:hover,.menu-item.active{color:var(--text);background:rgba(0,229,255,0.06);border-left-color:var(--cyan);}
-.menu-item .mi{font-size:16px;width:20px;text-align:center;}
-.sidebar-footer{padding:16px 24px;border-top:1px solid var(--border);}
-.user-badge{display:flex;align-items:center;gap:10px;}
-.user-avatar{width:36px;height:36px;border-radius:50%;background:var(--cyan-dim);border:1px solid var(--cyan-glow);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--cyan);font-family:var(--font-head);}
-.user-info{flex:1;}
-.user-name{font-size:13px;font-weight:600;}
-.user-role{font-size:11px;color:var(--text-muted);}
-.logout-btn{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:16px;transition:color 0.2s;}
-.logout-btn:hover{color:var(--red);}
-.dash-main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;}
-.topbar{height:64px;background:rgba(5,10,20,0.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:40;}
-.topbar-title{font-family:var(--font-head);font-size:18px;font-weight:700;}
-.topbar-right{display:flex;align-items:center;gap:16px;}
-.live-dot{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--green);}
-.live-dot::before{content:'';width:7px;height:7px;background:var(--green);border-radius:50%;animation:blink 1.4s infinite;}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
-.view-btn{display:flex;align-items:center;gap:6px;padding:7px 16px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:13px;cursor:pointer;text-decoration:none;transition:all 0.2s;}
-.view-btn:hover{border-color:var(--cyan);color:var(--cyan);}
-.dash-content{padding:32px;flex:1;}
-
-/* TOKEN BOX */
-.token-box{background:linear-gradient(135deg,rgba(0,229,255,0.06),rgba(0,255,148,0.03));border:1px solid var(--cyan-glow);border-radius:16px;padding:24px 28px;margin-bottom:28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
-.token-box.connected{border-color:rgba(0,255,148,0.4);background:linear-gradient(135deg,rgba(0,255,148,0.05),rgba(0,229,255,0.03));}
-.token-label{font-size:13px;font-weight:600;color:var(--text-muted);white-space:nowrap;}
-.token-input{flex:1;min-width:260px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:var(--font-body);font-size:14px;outline:none;transition:border-color 0.2s;}
-.token-input:focus{border-color:var(--cyan);}
-.token-save{background:var(--cyan);color:#000;border:none;border-radius:8px;padding:10px 20px;font-family:var(--font-head);font-weight:700;font-size:13px;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
-.token-save:hover{transform:translateY(-1px);box-shadow:0 4px 16px var(--cyan-glow);}
-.token-status{font-size:13px;font-weight:600;}
-.token-status.ok{color:var(--green);}
-.token-status.err{color:var(--red);}
-
-/* STATS */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 24px;transition:border-color 0.3s;}
-.stat-card:hover{border-color:var(--cyan-glow);}
-.sc-icon{font-size:22px;margin-bottom:10px;}
-.sc-num{font-family:var(--font-head);font-size:28px;font-weight:800;line-height:1;margin-bottom:4px;}
-.sc-label{font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;}
-
-/* TABS */
-.tabs{display:flex;gap:4px;margin-bottom:28px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:4px;width:fit-content;}
-.tab{padding:9px 20px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text-muted);transition:all 0.2s;border:none;background:none;font-family:var(--font-body);}
-.tab.active{background:var(--cyan-dim);color:var(--cyan);border:1px solid var(--cyan-glow);}
-
-/* WRITE FORM */
-.write-form{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
-.form-header{padding:20px 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.form-header h3{font-family:var(--font-head);font-size:18px;font-weight:700;}
-.form-body{padding:28px;}
-.fg{margin-bottom:20px;}
-.fl{display:block;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;}
-.fi{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-family:var(--font-body);font-size:14px;outline:none;transition:border-color 0.2s,box-shadow 0.2s;}
-.fi:focus{border-color:var(--cyan);box-shadow:0 0 0 3px var(--cyan-dim);}
-select.fi{cursor:pointer;}
-textarea.fi{resize:vertical;line-height:1.6;}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-.char-count{font-size:11px;color:var(--text-muted);text-align:right;margin-top:4px;}
-.form-actions{display:flex;gap:12px;align-items:center;padding:20px 28px;border-top:1px solid var(--border);flex-wrap:wrap;}
-.btn-publish{background:var(--cyan);color:#000;border:none;border-radius:10px;padding:12px 28px;font-family:var(--font-head);font-weight:700;font-size:14px;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;display:flex;align-items:center;gap:8px;}
-.btn-publish:hover{transform:translateY(-2px);box-shadow:0 8px 24px var(--cyan-glow);}
-.btn-publish:disabled{opacity:0.5;pointer-events:none;}
-.btn-clear{background:transparent;color:var(--text-muted);border:1px solid var(--border);border-radius:10px;padding:12px 20px;font-family:var(--font-body);font-size:14px;cursor:pointer;transition:all 0.2s;}
-.btn-clear:hover{color:var(--text);border-color:var(--text-muted);}
-.featured-toggle{display:flex;align-items:center;gap:10px;margin-left:auto;}
-.toggle-label{font-size:13px;color:var(--text-muted);}
-.toggle{width:44px;height:24px;background:var(--border);border-radius:12px;cursor:pointer;position:relative;transition:background 0.2s;}
-.toggle.on{background:var(--cyan);}
-.toggle::after{content:'';width:18px;height:18px;background:#fff;border-radius:50%;position:absolute;top:3px;left:3px;transition:left 0.2s;}
-.toggle.on::after{left:23px;}
-
-/* TABLE */
-.articles-table{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
-.table-head{display:grid;grid-template-columns:1fr 100px 130px 80px 80px;padding:14px 20px;background:var(--surface2);border-bottom:1px solid var(--border);font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);}
-.table-row{display:grid;grid-template-columns:1fr 100px 130px 80px 80px;padding:16px 20px;border-bottom:1px solid var(--border);align-items:center;transition:background 0.2s;}
-.table-row:last-child{border-bottom:none;}
-.table-row:hover{background:var(--surface2);}
-.tr-title{font-size:14px;font-weight:500;line-height:1.3;}
-.tr-sub{font-size:12px;color:var(--text-muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:360px;}
-.cat-tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:4px;}
-.cat-ML{background:rgba(0,229,255,0.12);color:#00e5ff;}
-.cat-LLM{background:rgba(0,255,148,0.12);color:#00ff94;}
-.cat-Robotics{background:rgba(255,107,53,0.15);color:#ff6b35;}
-.cat-Policy{background:rgba(167,139,250,0.15);color:#a78bfa;}
-.tr-date{font-size:12px;color:var(--text-muted);}
-.tr-actions{display:flex;gap:8px;}
-.action-btn{width:30px;height:30px;border-radius:6px;border:1px solid var(--border);background:none;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
-.action-btn:hover{border-color:var(--red);color:var(--red);}
-.empty-state{padding:60px;text-align:center;color:var(--text-muted);}
-
-/* PROGRESS */
-.progress-bar{height:3px;background:var(--cyan);width:0%;transition:width 0.3s;position:fixed;top:0;left:0;z-index:1000;}
-
-/* TOAST */
-.toast{position:fixed;bottom:30px;right:30px;background:var(--surface);border:1px solid var(--cyan-glow);border-radius:10px;padding:14px 20px;font-size:14px;font-weight:500;color:var(--cyan);box-shadow:0 8px 32px rgba(0,0,0,0.5);z-index:300;transform:translateY(80px);opacity:0;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);max-width:380px;}
-.toast.show{transform:translateY(0);opacity:1;}
-.toast.success{border-color:rgba(0,255,148,0.4);color:var(--green);}
-.toast.error{border-color:rgba(255,77,109,0.4);color:var(--red);}
-
-/* CONFIRM */
-.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);z-index:200;display:none;align-items:center;justify-content:center;}
-.confirm-overlay.open{display:flex;}
-.confirm-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;max-width:380px;width:95%;text-align:center;animation:modalIn 0.3s ease;}
-@keyframes modalIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
-.confirm-box h3{font-family:var(--font-head);font-size:20px;margin-bottom:8px;}
-.confirm-box p{font-size:14px;color:var(--text-muted);margin-bottom:24px;}
-.confirm-btns{display:flex;gap:10px;justify-content:center;}
-.btn-del{background:var(--red);color:#fff;border:none;border-radius:8px;padding:10px 24px;font-weight:700;cursor:pointer;font-family:var(--font-body);}
-.btn-cancel{background:transparent;color:var(--text-muted);border:1px solid var(--border);border-radius:8px;padding:10px 20px;cursor:pointer;font-family:var(--font-body);transition:all 0.2s;}
-.btn-cancel:hover{color:var(--text);}
-
-@media(max-width:900px){.sidebar{display:none;}.dash-main{margin-left:0;}.stats-row{grid-template-columns:1fr 1fr;}.form-row{grid-template-columns:1fr;}.table-head,.table-row{grid-template-columns:1fr 90px;}.table-head span:nth-child(2),.table-head span:nth-child(3),.table-head span:nth-child(4),.table-row>*:nth-child(2),.table-row>*:nth-child(3),.table-row>*:nth-child(4){display:none;}}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:9999;}
+.bg-grid{position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:0.2;pointer-events:none;}
+.bg-orb{position:fixed;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(0,229,255,0.1) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);animation:orbFloat 10s ease-in-out infinite;pointer-events:none;}
+@keyframes orbFloat{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-52%) scale(1.05)}}
+nav{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:64px;background:rgba(5,10,20,0.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+.nav-logo{font-family:var(--font-head);font-size:22px;font-weight:800;color:var(--text);text-decoration:none;}
+.nav-logo span{color:var(--cyan);}
+.back-link{font-size:13px;color:var(--text-muted);text-decoration:none;transition:color 0.2s;display:flex;align-items:center;gap:6px;}
+.back-link:hover{color:var(--cyan);}
+main{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px;position:relative;z-index:1;}
+.login-wrap{width:100%;max-width:420px;}
+.icon-shield{width:64px;height:64px;border-radius:16px;background:linear-gradient(135deg,var(--cyan-dim),rgba(0,255,148,0.08));border:1px solid var(--cyan-glow);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 28px;box-shadow:0 0 30px var(--cyan-dim);animation:iconPulse 3s ease-in-out infinite;}
+@keyframes iconPulse{0%,100%{box-shadow:0 0 20px var(--cyan-dim)}50%{box-shadow:0 0 40px var(--cyan-glow)}}
+.login-title{font-family:var(--font-head);font-size:32px;font-weight:800;text-align:center;letter-spacing:-0.5px;margin-bottom:8px;}
+.login-sub{text-align:center;color:var(--text-muted);font-size:14px;margin-bottom:36px;}
+.form-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px;animation:cardIn 0.5s ease both;}
+@keyframes cardIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.form-group{margin-bottom:20px;}
+.form-label{display:block;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;}
+.form-input-wrap{position:relative;}
+.form-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;opacity:0.5;}
+.form-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:13px 16px 13px 42px;color:var(--text);font-family:var(--font-body);font-size:15px;outline:none;transition:border-color 0.2s,box-shadow 0.2s;}
+.form-input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px var(--cyan-dim);}
+.form-input.error{border-color:var(--error);}
+.eye-toggle{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:16px;padding:0;transition:color 0.2s;}
+.eye-toggle:hover{color:var(--cyan);}
+.form-error{font-size:12px;color:var(--error);margin-top:6px;display:none;}
+.form-error.show{display:block;}
+.btn-login{width:100%;background:var(--cyan);color:#000;border:none;border-radius:10px;padding:14px;font-family:var(--font-head);font-weight:700;font-size:15px;letter-spacing:0.5px;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;margin-top:8px;position:relative;overflow:hidden;}
+.btn-login:hover{transform:translateY(-2px);box-shadow:0 8px 28px var(--cyan-glow);}
+.error-banner{background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--error);margin-bottom:20px;display:none;align-items:center;gap:8px;}
+.error-banner.show{display:flex;}
+.shake{animation:shake 0.5s ease;}
+@keyframes shake{0%,100%{transform:none}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
 </style>
 </head>
 <body>
-<div class="progress-bar" id="progress"></div>
-<div class="dash-wrap">
-
-<aside class="sidebar">
-  <div class="sidebar-logo">Maqaal<span>Tech</span></div>
-  <nav class="sidebar-menu">
-    <button class="menu-item active" onclick="showTab('write')"><span class="mi">✍️</span>Write Article</button>
-    <button class="menu-item" onclick="showTab('articles')"><span class="mi">📰</span>All Articles</button>
-    <a class="menu-item" href="index.html" target="_blank"><span class="mi">🌐</span>View Site</a>
-  </nav>
-  <div class="sidebar-footer">
-    <div class="user-badge">
-      <div class="user-avatar">A</div>
-      <div class="user-info">
-        <div class="user-name">Khalid</div>
-        <div class="user-role">Editor-in-Chief</div>
+<div class="bg-grid"></div>
+<div class="bg-orb"></div>
+<nav>
+  <a href="index.html" class="nav-logo">Maqaal<span>Tech</span></a>
+  <a href="index.html" class="back-link">← Back to site</a>
+</nav>
+<main>
+  <div class="login-wrap">
+    <div class="icon-shield">🛡️</div>
+    <h1 class="login-title">Admin Portal</h1>
+    <p class="login-sub">Sign in to manage and publish AI news</p>
+    <div class="form-card">
+      <div class="error-banner" id="error-banner">
+        <span>⚠</span><span id="error-text">Invalid credentials. Please try again.</span>
       </div>
-      <button class="logout-btn" onclick="logout()" title="Logout">⏏</button>
-    </div>
-  </div>
-</aside>
-
-<div class="dash-main">
-  <div class="topbar">
-    <div class="topbar-title" id="page-title">Write New Article</div>
-    <div class="topbar-right">
-      <div class="live-dot">Live</div>
-      <a class="view-btn" href="index.html" target="_blank">🌐 View Site</a>
-    </div>
-  </div>
-
-  <div class="dash-content">
-
-    <!-- TOKEN INPUT -->
-    <div class="token-box" id="token-box">
-      <span class="token-label">🔑 GitHub Token:</span>
-      <input class="token-input" id="gh-token" type="password" placeholder="Paste your GitHub Personal Access Token here (ghp_xxx...)"/>
-      <button class="token-save" onclick="saveToken()">Connect</button>
-      <span class="token-status" id="token-status"></span>
-    </div>
-
-    <!-- STATS -->
-    <div class="stats-row">
-      <div class="stat-card"><div class="sc-icon">📰</div><div class="sc-num" id="sc-total">—</div><div class="sc-label">Total Articles</div></div>
-      <div class="stat-card"><div class="sc-icon">⭐</div><div class="sc-num" id="sc-featured">—</div><div class="sc-label">Featured</div></div>
-      <div class="stat-card"><div class="sc-icon">📅</div><div class="sc-num" id="sc-today">0</div><div class="sc-label">Today</div></div>
-      <div class="stat-card"><div class="sc-icon">🔗</div><div class="sc-num" id="sc-conn">—</div><div class="sc-label">GitHub</div></div>
-    </div>
-
-    <!-- TABS -->
-    <div class="tabs">
-      <button class="tab active" onclick="showTab('write')" id="tab-write">✍️ Write Article</button>
-      <button class="tab" onclick="showTab('articles')" id="tab-articles">📋 Manage Articles</button>
-    </div>
-
-    <!-- WRITE PANEL -->
-    <div id="panel-write">
-      <div class="write-form">
-        <div class="form-header">
-          <h3>Publish New AI Article</h3>
-          <span style="font-size:12px;color:var(--text-muted)">Saves directly to GitHub → all visitors see it</span>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <div class="form-input-wrap">
+          <span class="form-icon">✉️</span>
+          <input class="form-input" id="email" type="email" placeholder="diinisalman@gmail.com" autocomplete="email"/>
         </div>
-        <div class="form-body">
-          <div class="fg">
-            <label class="fl">Article Title</label>
-            <input class="fi" id="art-title" type="text" placeholder="e.g. OpenAI Releases GPT-6 with New Capabilities" maxlength="120" oninput="cc('art-title','tc-title',120)"/>
-            <div class="char-count"><span id="tc-title">0</span>/120</div>
-          </div>
-          <div class="fg">
-            <label class="fl">Short Excerpt</label>
-            <textarea class="fi" id="art-excerpt" placeholder="2–3 sentence summary shown on homepage cards…" maxlength="220" rows="3" oninput="cc('art-excerpt','tc-excerpt',220)" style="min-height:80px"></textarea>
-            <div class="char-count"><span id="tc-excerpt">0</span>/220</div>
-          </div>
-          <div class="fg">
-            <label class="fl">Full Article Body</label>
-            <textarea class="fi" id="article-body" placeholder="Write the full article content here. This is what readers see when they open the article…" style="min-height:200px"></textarea>
-          </div>
-          <div class="form-row">
-            <div class="fg">
-              <label class="fl">Category</label>
-              <select class="fi" id="art-cat">
-                <option value="">— Select Category —</option>
-                <option value="ML">Machine Learning</option>
-                <option value="LLM">Large Language Models</option>
-                <option value="Robotics">Robotics</option>
-                <option value="Policy">AI Policy</option>
-              </select>
-            </div>
-            <div class="fg">
-              <label class="fl">Author Name</label>
-              <input class="fi" id="art-author" type="text" value="MaqaalTech Staff"/>
-            </div>
-          </div>
+        <div class="form-error" id="email-error">Please enter a valid email.</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="form-input-wrap">
+          <span class="form-icon">🔑</span>
+          <input class="form-input" id="password" type="password" placeholder="••••••••" autocomplete="current-password"/>
+          <button class="eye-toggle" type="button" onclick="togglePwd()">👁</button>
         </div>
-        <div class="form-actions">
-          <button class="btn-publish" id="pub-btn" onclick="publishArticle()">
-            <span id="pub-icon">🚀</span>
-            <span id="pub-text">Publish to GitHub</span>
-          </button>
-          <button class="btn-clear" onclick="clearForm()">✕ Clear</button>
-          <div class="featured-toggle">
-            <span class="toggle-label">Featured</span>
-            <div class="toggle" id="feat-toggle" onclick="this.classList.toggle('on')"></div>
-          </div>
-        </div>
+        <div class="form-error" id="pwd-error">Password is required.</div>
       </div>
-    </div>
-
-    <!-- ARTICLES PANEL -->
-    <div id="panel-articles" style="display:none">
-      <div style="display:flex;justify-content:flex-end;margin-bottom:16px;">
-        <button class="token-save" onclick="loadArticles()">🔄 Refresh from GitHub</button>
-      </div>
-      <div class="articles-table">
-        <div class="table-head"><span>Article</span><span>Category</span><span>Date</span><span>Featured</span><span>Actions</span></div>
-        <div id="articles-body"></div>
-      </div>
-    </div>
-
-  </div>
-</div>
-</div>
-
-<!-- CONFIRM DELETE -->
-<div class="confirm-overlay" id="confirm-overlay">
-  <div class="confirm-box">
-    <h3>Delete Article?</h3>
-    <p>This permanently removes the article from GitHub and updates the site instantly.</p>
-    <div class="confirm-btns">
-      <button class="btn-cancel" onclick="closeConfirm()">Cancel</button>
-      <button class="btn-del" onclick="confirmDelete()">Delete</button>
+      <button class="btn-login" id="login-btn" onclick="login()">
+        <span id="btn-text">Sign In</span>
+      </button>
     </div>
   </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
+</main>
 <script>
-  // ✅ AUTH GUARD
-  if(!sessionStorage.getItem('maqaaltech_admin')){
-    window.location.href='admin-login.html';
+  // ✅ CREDENTIALS - DIYAAR
+  const ADMIN_EMAIL    = "diinisalman@gmail.com";
+  const ADMIN_PASSWORD = "caseey97&";
+
+  function togglePwd(){
+    const p=document.getElementById('password');
+    p.type=p.type==='password'?'text':'password';
   }
 
-  // ✅ GITHUB CONFIG — DIYAAR
-  const GH_USER = "khalid-4597";
-  const GH_REPO = "maqaaltech";
-  const GH_FILE = "articles.json";
-  const GH_API  = "https://api.github.com/repos/" + GH_USER + "/" + GH_REPO + "/contents/" + GH_FILE;
+  function login(){
+    const email=document.getElementById('email').value.trim();
+    const pwd=document.getElementById('password').value;
+    let valid=true;
 
-  let GH_TOKEN = localStorage.getItem('maqaaltech_token') || '';
-  let allArticles = [];
-  let deleteTargetId = null;
+    document.getElementById('email-error').classList.remove('show');
+    document.getElementById('pwd-error').classList.remove('show');
+    document.getElementById('error-banner').classList.remove('show');
+    document.getElementById('email').classList.remove('error');
+    document.getElementById('password').classList.remove('error');
 
-  // Load saved token
-  if(GH_TOKEN){
-    document.getElementById('gh-token').value = GH_TOKEN;
-    loadArticles();
-  }
+    if(!email||!email.includes('@')){document.getElementById('email-error').classList.add('show');document.getElementById('email').classList.add('error');valid=false;}
+    if(!pwd){document.getElementById('pwd-error').classList.add('show');document.getElementById('password').classList.add('error');valid=false;}
+    if(!valid)return;
 
-  async function saveToken(){
-    const t = document.getElementById('gh-token').value.trim();
-    if(!t){ showToast('⚠ Token required.','error'); return; }
-    const statusEl = document.getElementById('token-status');
-    statusEl.textContent = 'Testing…'; statusEl.className = 'token-status';
+    const btn=document.getElementById('login-btn');
+    btn.style.opacity='0.7';
+    document.getElementById('btn-text').textContent='Signing in…';
 
-    try{
-      const r = await fetch("https://api.github.com/repos/" + GH_USER + "/" + GH_REPO, {
-        headers:{ Authorization:'token '+t, Accept:'application/vnd.github.v3+json' }
-      });
-      if(!r.ok) throw new Error();
-      GH_TOKEN = t;
-      localStorage.setItem('maqaaltech_token', t);
-      statusEl.textContent = '✓ Connected!'; statusEl.className = 'token-status ok';
-      document.getElementById('token-box').classList.add('connected');
-      document.getElementById('sc-conn').textContent = '✓ OK';
-      showToast('✓ GitHub connected! You can now publish articles.','success');
-      loadArticles();
-    }catch{
-      statusEl.textContent = '✗ Failed. Check token.'; statusEl.className = 'token-status err';
-      showToast('✗ Token invalid. Generate a new one from GitHub settings.','error');
-    }
-  }
-
-  async function loadArticles(){
-    if(!GH_TOKEN) return;
-    try{
-      const r = await fetch(GH_API+'?t='+Date.now(), {
-        headers:{ Authorization:'token '+GH_TOKEN, Accept:'application/vnd.github.v3+json' }
-      });
-      if(!r.ok) throw new Error();
-      const data = await r.json();
-      allArticles = JSON.parse(atob(data.content.replace(/\n/g,'')));
-      updateStats();
-      if(document.getElementById('panel-articles').style.display !== 'none') renderTable();
-    }catch{
-      showToast('Could not load articles from GitHub.','error');
-    }
-  }
-
-  function updateStats(){
-    document.getElementById('sc-total').textContent = allArticles.length;
-    document.getElementById('sc-featured').textContent = allArticles.filter(a=>a.featured).length;
-    document.getElementById('sc-today').textContent = allArticles.filter(a=>a.date===formatDate()).length;
-    document.getElementById('sc-conn').textContent = GH_TOKEN ? '✓ OK' : '—';
-  }
-
-  async function publishArticle(){
-    const title   = document.getElementById('art-title').value.trim();
-    const excerpt = document.getElementById('art-excerpt').value.trim();
-    const body    = document.getElementById('article-body').value.trim();
-    const cat     = document.getElementById('art-cat').value;
-    const author  = document.getElementById('art-author').value.trim();
-    const featured= document.getElementById('feat-toggle').classList.contains('on');
-
-    if(!GH_TOKEN){ showToast('⚠ Connect your GitHub token first (top of page).','error'); return; }
-    if(!title||!excerpt||!body||!cat||!author){ showToast('⚠ Fill in all fields before publishing.','error'); return; }
-
-    const btn = document.getElementById('pub-btn');
-    btn.disabled = true;
-    document.getElementById('pub-icon').textContent = '⏳';
-    document.getElementById('pub-text').textContent = 'Publishing…';
-    setProgress(20);
-
-    try{
-      // Get current file + SHA
-      const fileRes = await fetch(GH_API+'?t='+Date.now(), {
-        headers:{ Authorization:'token '+GH_TOKEN, Accept:'application/vnd.github.v3+json' }
-      });
-      setProgress(40);
-
-      let sha = null, current = [];
-      if(fileRes.ok){
-        const fd = await fileRes.json();
-        sha = fd.sha;
-        current = JSON.parse(atob(fd.content.replace(/\n/g,'')));
+    setTimeout(()=>{
+      if(email===ADMIN_EMAIL && pwd===ADMIN_PASSWORD){
+        sessionStorage.setItem('maqaaltech_admin','1');
+        document.getElementById('btn-text').textContent='✓ Welcome!';
+        setTimeout(()=>window.location.href='admin-dashboard.html',600);
+      } else {
+        btn.style.opacity='1';
+        document.getElementById('btn-text').textContent='Sign In';
+        document.getElementById('error-banner').classList.add('show');
+        document.querySelector('.form-card').classList.add('shake');
+        setTimeout(()=>document.querySelector('.form-card').classList.remove('shake'),500);
       }
-
-      const newArticle = { id:Date.now(), title, excerpt, body, category:cat, author, date:formatDate(), featured };
-      const updated = [newArticle, ...current];
-      setProgress(65);
-
-      // Push updated file to GitHub
-      const pushRes = await fetch(GH_API, {
-        method: 'PUT',
-        headers:{ Authorization:'token '+GH_TOKEN, Accept:'application/vnd.github.v3+json', 'Content-Type':'application/json' },
-        body: JSON.stringify({
-          message: 'Add article: ' + title.slice(0,60),
-          content: btoa(unescape(encodeURIComponent(JSON.stringify(updated, null, 2)))),
-          sha: sha
-        })
-      });
-      setProgress(90);
-
-      if(!pushRes.ok){
-        const err = await pushRes.json();
-        throw new Error(err.message || 'Push failed');
-      }
-
-      allArticles = updated;
-      updateStats();
-      clearForm();
-      setProgress(100);
-      setTimeout(()=>setProgress(0), 600);
-      showToast('✓ Article published! Visible on homepage now.','success');
-
-    }catch(e){
-      showToast('✗ Publish failed: ' + e.message,'error');
-      setProgress(0);
-    }finally{
-      btn.disabled = false;
-      document.getElementById('pub-icon').textContent = '🚀';
-      document.getElementById('pub-text').textContent = 'Publish to GitHub';
-    }
+    },900);
   }
 
-  async function deleteArticle(id){
-    if(!GH_TOKEN){ showToast('Connect token first.','error'); return; }
-    try{
-      const fileRes = await fetch(GH_API+'?t='+Date.now(), {
-        headers:{ Authorization:'token '+GH_TOKEN, Accept:'application/vnd.github.v3+json' }
-      });
-      const fd = await fileRes.json();
-      const current = JSON.parse(atob(fd.content.replace(/\n/g,'')));
-      const updated = current.filter(a=>a.id!==id);
-
-      await fetch(GH_API, {
-        method:'PUT',
-        headers:{ Authorization:'token '+GH_TOKEN, Accept:'application/vnd.github.v3+json', 'Content-Type':'application/json' },
-        body:JSON.stringify({
-          message:'Delete article id:'+id,
-          content:btoa(unescape(encodeURIComponent(JSON.stringify(updated,null,2)))),
-          sha:fd.sha
-        })
-      });
-      allArticles = updated;
-      updateStats();
-      renderTable();
-      showToast('🗑 Article deleted.','success');
-    }catch(e){
-      showToast('Delete failed: '+e.message,'error');
-    }
-  }
-
-  function renderTable(){
-    const tb = document.getElementById('articles-body');
-    if(!allArticles.length){
-      tb.innerHTML='<div class="empty-state"><div style="font-size:36px;margin-bottom:12px">📭</div><p>No articles yet. Write your first one!</p></div>';
-      return;
-    }
-    tb.innerHTML = allArticles.map(a=>`
-      <div class="table-row">
-        <div><div class="tr-title">${a.title}</div><div class="tr-sub">${a.excerpt}</div></div>
-        <div><span class="cat-tag cat-${a.category}">${a.category}</span></div>
-        <div class="tr-date">${a.date}</div>
-        <div>${a.featured?'⭐':'—'}</div>
-        <div class="tr-actions"><button class="action-btn" onclick="askDelete(${a.id})" title="Delete">🗑</button></div>
-      </div>`).join('');
-  }
-
-  function askDelete(id){ deleteTargetId=id; document.getElementById('confirm-overlay').classList.add('open'); }
-  function closeConfirm(){ document.getElementById('confirm-overlay').classList.remove('open'); deleteTargetId=null; }
-  function confirmDelete(){ if(deleteTargetId!==null){ deleteArticle(deleteTargetId); closeConfirm(); } }
-
-  function showTab(tab){
-    ['write','articles'].forEach(t=>{
-      document.getElementById('panel-'+t).style.display = t===tab?'block':'none';
-      document.getElementById('tab-'+t)?.classList.toggle('active', t===tab);
-    });
-    document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('active'));
-    document.getElementById('page-title').textContent = tab==='write'?'Write New Article':'Manage Articles';
-    if(tab==='articles') loadArticles().then(renderTable);
-  }
-
-  function cc(a,b,m){ document.getElementById(b).textContent=document.getElementById(a).value.length; }
-  function formatDate(){ return new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
-  function setProgress(p){ document.getElementById('progress').style.width=p+'%'; }
-
-  function clearForm(){
-    ['art-title','art-excerpt','article-body'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('art-cat').value='';
-    document.getElementById('art-author').value='MaqaalTech Staff';
-    document.getElementById('feat-toggle').classList.remove('on');
-    ['tc-title','tc-excerpt'].forEach(id=>document.getElementById(id).textContent='0');
-  }
-
-  function showToast(msg, type=''){
-    const t=document.getElementById('toast');
-    t.textContent=msg; t.className='toast'+(type?' '+type:'');
-    void t.offsetWidth; t.classList.add('show');
-    setTimeout(()=>t.classList.remove('show'),4000);
-  }
-
-  function logout(){ sessionStorage.removeItem('maqaaltech_admin'); window.location.href='admin-login.html'; }
+  document.addEventListener('keydown',e=>{if(e.key==='Enter')login();});
 </script>
 </body>
 </html>
