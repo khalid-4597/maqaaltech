@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>MaqaalTech — AI News</title>
+<title>Admin Dashboard — MaqaalTech</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
+/* ── DARK MODE (default) ── */
 :root{
   --bg:#000000;
   --surface:#0f0f0f;
@@ -13,25 +14,20 @@
   --surface3:#242424;
   --border:#2a2a2a;
   --border-light:#333333;
-  --accent:#ffffff;
-  --accent-dim:rgba(255,255,255,0.08);
-  --accent-hover:rgba(255,255,255,0.12);
   --text:#e7e9ea;
   --text-muted:#71767b;
   --text-faint:#404040;
-  --cat-ml-bg:rgba(255,255,255,0.08);
-  --cat-ml-text:#e7e9ea;
-  --cat-llm-bg:rgba(255,255,255,0.08);
-  --cat-llm-text:#e7e9ea;
-  --cat-robotics-bg:rgba(255,255,255,0.08);
-  --cat-robotics-text:#e7e9ea;
-  --cat-policy-bg:rgba(255,255,255,0.08);
-  --cat-policy-text:#e7e9ea;
+  --accent-dim:rgba(255,255,255,0.07);
+  --accent-hover:rgba(255,255,255,0.12);
+  --red:#f4212e;
+  --green:#00ba7c;
   --font-head:'Syne',sans-serif;
   --font-body:'DM Sans',sans-serif;
-  --placeholder-img:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='450' viewBox='0 0 800 450'%3E%3Crect width='800' height='450' fill='%230f0f0f'/%3E%3Crect x='350' y='185' width='100' height='80' rx='6' fill='%232a2a2a'/%3E%3Ccircle cx='375' cy='205' r='12' fill='%23333'/%3E%3Cpolygon points='350,265 400,215 450,265' fill='%23333'/%3E%3C/svg%3E");
+  --sidebar:228px;
+  --topbar-bg:rgba(0,0,0,0.9);
 }
-/* ── LIGHT MODE VARIABLES ── */
+
+/* ── LIGHT MODE ── */
 html[data-theme="light"]{
   --bg:#ffffff;
   --surface:#f7f7f7;
@@ -39,556 +35,884 @@ html[data-theme="light"]{
   --surface3:#e6e6e6;
   --border:#e0e0e0;
   --border-light:#cccccc;
-  --accent:#000000;
-  --accent-dim:rgba(0,0,0,0.06);
-  --accent-hover:rgba(0,0,0,0.1);
   --text:#0f0f0f;
   --text-muted:#536471;
   --text-faint:#aaaaaa;
+  --accent-dim:rgba(0,0,0,0.05);
+  --accent-hover:rgba(0,0,0,0.1);
+  --topbar-bg:rgba(255,255,255,0.92);
 }
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
 body{
   background:var(--bg);color:var(--text);
-  font-family:var(--font-body);font-size:16px;line-height:1.6;overflow-x:hidden;
-  transition:background 0.3s ease, color 0.3s ease;
+  font-family:var(--font-body);min-height:100vh;overflow-x:hidden;
+  transition:background 0.3s ease,color 0.3s ease;
 }
 
-/* ── NAV ── */
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:100;
+/* ── LAYOUT ── */
+.dash-wrap{display:flex;min-height:100vh;}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:var(--sidebar);background:var(--surface);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;bottom:0;z-index:50;
+  transition:background 0.3s,border-color 0.3s;
+}
+.sidebar-logo{
+  padding:20px 22px;border-bottom:1px solid var(--border);
+  font-family:var(--font-head);font-size:17px;font-weight:800;
+  display:flex;align-items:center;gap:10px;
+}
+.sidebar-logo-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--text);opacity:0.6;flex-shrink:0;
+}
+.sidebar-menu{flex:1;padding:12px 0;}
+.menu-item{
+  display:flex;align-items:center;gap:11px;
+  padding:10px 22px;cursor:pointer;font-size:13.5px;font-weight:500;
+  color:var(--text-muted);border-left:2px solid transparent;
+  transition:all 0.2s;text-decoration:none;background:none;
+  width:100%;border-top:none;border-right:none;border-bottom:none;
+  font-family:var(--font-body);
+}
+.menu-item:hover,.menu-item.active{
+  color:var(--text);background:var(--accent-dim);border-left-color:var(--text);
+}
+.menu-item .mi{font-size:15px;width:18px;text-align:center;flex-shrink:0;}
+.sidebar-footer{padding:14px 22px;border-top:1px solid var(--border);}
+.user-badge{display:flex;align-items:center;gap:10px;}
+.user-avatar{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--surface2);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;color:var(--text);font-family:var(--font-head);
+  flex-shrink:0;
+}
+.user-info{flex:1;min-width:0;}
+.user-name{font-size:13px;font-weight:600;}
+.user-role{font-size:11px;color:var(--text-muted);}
+.logout-btn{
+  background:none;border:none;color:var(--text-muted);
+  cursor:pointer;font-size:15px;transition:color 0.2s;padding:4px;
+}
+.logout-btn:hover{color:var(--red);}
+
+/* ── MAIN ── */
+.dash-main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;}
+
+/* ── TOPBAR ── */
+.topbar{
+  height:56px;background:var(--topbar-bg);
+  backdrop-filter:blur(16px);border-bottom:1px solid var(--border);
   display:flex;align-items:center;justify-content:space-between;
-  padding:0 40px;height:56px;
-  background:var(--nav-bg, rgba(0,0,0,0.92));backdrop-filter:blur(16px);
-  border-bottom:1px solid var(--border);
-  transition:background 0.3s ease, border-color 0.3s ease;
+  padding:0 28px;position:sticky;top:0;z-index:40;
+  transition:background 0.3s,border-color 0.3s;
 }
-html[data-theme="light"] nav{
-  background:rgba(255,255,255,0.92);
+.topbar-title{font-family:var(--font-head);font-size:16px;font-weight:700;}
+.topbar-right{display:flex;align-items:center;gap:12px;}
+.live-dot{
+  display:flex;align-items:center;gap:6px;
+  font-size:12px;color:var(--green);
 }
-.nav-logo{font-family:var(--font-head);font-size:20px;font-weight:800;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:10px;}
-.nav-logo img{height:34px;width:auto;display:block;}
-.nav-logo span{color:var(--text-muted);}
-.nav-links{display:flex;gap:24px;align-items:center;}
-.nav-links a{color:var(--text-muted);text-decoration:none;font-size:13px;font-weight:500;letter-spacing:0.4px;text-transform:uppercase;transition:color 0.2s;}
-.nav-links a:hover{color:var(--text);}
-.nav-badge{background:var(--text);color:var(--bg);font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;}
+.live-dot::before{
+  content:'';width:6px;height:6px;background:var(--green);
+  border-radius:50%;animation:blink 1.4s infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.25}}
+.view-btn{
+  display:flex;align-items:center;gap:6px;padding:6px 14px;
+  border-radius:8px;border:1px solid var(--border);
+  background:transparent;color:var(--text-muted);font-size:12px;
+  cursor:pointer;text-decoration:none;
+  transition:border-color 0.2s,color 0.2s,background 0.2s;
+}
+.view-btn:hover{border-color:var(--border-light);color:var(--text);background:var(--accent-dim);}
 
-/* ── THEME TOGGLE ── */
+/* ── THEME TOGGLE (topbar) ── */
 #theme-toggle{
   display:flex;align-items:center;justify-content:center;
-  width:36px;height:36px;border-radius:50%;
-  border:1px solid var(--border);
-  background:var(--accent-dim);
-  cursor:pointer;transition:background 0.2s, border-color 0.2s, transform 0.2s;
-  color:var(--text-muted);flex-shrink:0;
-  /* no font-family needed — SVG icons */
+  width:34px;height:34px;border-radius:50%;
+  border:1px solid var(--border);background:var(--accent-dim);
+  cursor:pointer;color:var(--text-muted);flex-shrink:0;
+  transition:background 0.2s,border-color 0.2s,transform 0.2s,color 0.2s;
 }
 #theme-toggle:hover{
-  background:var(--accent-hover);
-  border-color:var(--border-light);
-  color:var(--text);
-  transform:rotate(18deg);
+  background:var(--accent-hover);border-color:var(--border-light);
+  color:var(--text);transform:rotate(18deg);
 }
 #theme-toggle svg{
-  width:16px;height:16px;
-  display:block;flex-shrink:0;
-  fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
-  transition:opacity 0.2s;
+  width:14px;height:14px;display:block;
+  fill:none;stroke:currentColor;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round;
 }
-/* show sun in dark mode, moon in light mode */
-#icon-sun{ display:none; }
-#icon-moon{ display:block; }
-html[data-theme="light"] #icon-sun{ display:block; }
-html[data-theme="light"] #icon-moon{ display:none; }
+#icon-sun{display:none;}
+#icon-moon{display:block;}
+html[data-theme="light"] #icon-sun{display:block;}
+html[data-theme="light"] #icon-moon{display:none;}
 
-/* ── HERO ── */
-.hero{
-  min-height:100vh;display:flex;flex-direction:column;justify-content:center;
-  padding:120px 40px 80px;position:relative;overflow:hidden;
-}
-.hero-content{position:relative;max-width:860px;}
-.hero-tag{
-  display:inline-flex;align-items:center;gap:8px;
-  border:1px solid var(--border-light);color:var(--text-muted);
-  font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;
-  padding:6px 14px;border-radius:4px;margin-bottom:28px;
-}
-.hero-tag::before{content:'';width:5px;height:5px;background:var(--text);border-radius:50%;animation:blink 1.6s infinite;}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
-.hero-title{
-  font-family:var(--font-head);font-size:clamp(44px,7vw,88px);
-  font-weight:800;line-height:0.95;letter-spacing:-2px;margin-bottom:28px;
-  color:var(--text);
-}
-.hero-title .line-dim{color:var(--text-muted);}
-.hero-sub{font-size:17px;font-weight:300;color:var(--text-muted);max-width:500px;margin-bottom:40px;}
-.hero-stats{display:flex;gap:48px;flex-wrap:wrap;}
-.stat{display:flex;flex-direction:column;}
-.stat-num{font-family:var(--font-head);font-size:28px;font-weight:800;color:var(--text);line-height:1;}
-.stat-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
-.hero-divider{width:48px;height:2px;background:var(--text);margin-bottom:32px;opacity:0.25;}
+/* ── CONTENT ── */
+.dash-content{padding:28px 32px;flex:1;}
 
-/* ── TICKER ── */
-.ticker-wrap{border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--surface);overflow:hidden;white-space:nowrap;padding:10px 0;}
-.ticker-inner{display:inline-flex;gap:60px;animation:ticker 35s linear infinite;}
-@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.ticker-item{font-size:11px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);}
-.ticker-item span{color:var(--text-faint);margin-right:8px;}
-
-/* ── SECTIONS ── */
-section{padding:72px 40px;}
-.section-label{font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;}
-.section-title{font-family:var(--font-head);font-size:clamp(26px,4vw,40px);font-weight:800;line-height:1.1;letter-spacing:-1px;margin-bottom:8px;}
-.section-sub{color:var(--text-muted);margin-bottom:44px;max-width:460px;font-size:14px;}
-
-/* ── FEATURED CARDS ── */
-.featured-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;max-width:1200px;}
-.card{
+/* ── TOKEN BOX ── */
+.token-box{
   background:var(--surface);border:1px solid var(--border);
-  border-radius:12px;overflow:hidden;
-  transition:border-color 0.25s,background 0.25s;cursor:pointer;
+  border-radius:12px;padding:18px 22px;margin-bottom:24px;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  transition:border-color 0.3s,background 0.3s;
 }
-.card:hover{border-color:var(--border-light);background:var(--surface2);}
-.card-hero{grid-row:span 2;}
-
-/* Image container */
-.card-img{width:100%;overflow:hidden;flex-shrink:0;}
-.card-hero .card-img{aspect-ratio:16/9;}
-.card:not(.card-hero) .card-img{aspect-ratio:16/9;}
-.card-img img{
-  width:100%;height:100%;display:block;
-  object-fit:cover;
-  transition:transform 0.4s ease;
-  background:var(--surface2);
-}
-.card:hover .card-img img{transform:scale(1.03);}
-
-.card-body{padding:18px 20px 20px;}
-.card-cat{
-  display:inline-block;font-size:10px;font-weight:700;
-  letter-spacing:1.2px;text-transform:uppercase;
-  padding:3px 9px;border-radius:3px;margin-bottom:10px;
-  background:var(--accent-dim);color:var(--text-muted);
-}
-.card-title{font-family:var(--font-head);font-size:17px;font-weight:700;line-height:1.25;margin-bottom:8px;color:var(--text);}
-.card:hover .card-title{color:var(--text);}
-.card-hero .card-title{font-size:22px;}
-.card-excerpt{font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:14px;}
-.card-meta{display:flex;align-items:center;gap:10px;font-size:11px;color:var(--text-muted);}
-.card-meta-dot{width:3px;height:3px;background:var(--border-light);border-radius:50%;}
-
-/* ── FILTERS ── */
-.cat-filter{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:32px;}
-.pill{
-  padding:7px 18px;border-radius:40px;
-  border:1px solid var(--border);background:transparent;
-  color:var(--text-muted);font-size:12px;font-weight:500;
-  cursor:pointer;transition:all 0.2s;font-family:var(--font-body);
-}
-.pill:hover{border-color:var(--border-light);color:var(--text);background:var(--accent-dim);}
-.pill.active{border-color:var(--text);background:var(--accent-dim);color:var(--text);}
-
-/* ── NEWS LIST (with thumbnails) ── */
-.news-list{display:flex;flex-direction:column;max-width:1200px;}
-.news-item{
-  display:grid;
-  grid-template-columns:1fr 100px;
-  gap:16px;align-items:center;
-  padding:16px 0;border-bottom:1px solid var(--border);
-  cursor:pointer;transition:background 0.2s,padding 0.2s;
-  border-radius:0;
-}
-.news-item:hover{background:var(--surface);padding:16px 14px;margin:0 -14px;border-radius:10px;border-bottom-color:transparent;}
-.news-item-left{display:flex;flex-direction:column;gap:4px;min-width:0;}
-.news-title{font-family:var(--font-head);font-size:15px;font-weight:700;line-height:1.3;color:var(--text);transition:color 0.2s;}
-.news-item:hover .news-title{color:var(--text);}
-.news-meta{font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:2px;}
-.news-thumb{
-  width:100px;height:68px;flex-shrink:0;border-radius:8px;overflow:hidden;
-  background:var(--surface2);
-}
-.news-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
-
-/* ── LOADING ── */
-.loading-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px;gap:16px;color:var(--text-muted);}
-.spinner{width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--text-muted);border-radius:50%;animation:spin 0.8s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* ── NEWSLETTER ── */
-.newsletter{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:14px;padding:56px 48px;max-width:680px;
-  margin:0 auto;text-align:center;
-}
-.newsletter h2{font-family:var(--font-head);font-size:30px;font-weight:800;margin-bottom:12px;}
-.newsletter p{color:var(--text-muted);margin-bottom:28px;font-size:15px;}
-.email-form{display:flex;gap:10px;max-width:420px;margin:0 auto;}
-.email-form input{
-  flex:1;background:var(--surface2);
+.token-box.connected{border-color:rgba(0,186,124,0.4);}
+.token-label{font-size:12px;font-weight:600;color:var(--text-muted);white-space:nowrap;letter-spacing:0.5px;}
+.token-input{
+  flex:1;min-width:240px;background:var(--surface2);
   border:1px solid var(--border);border-radius:8px;
-  padding:12px 16px;color:var(--text);
-  font-family:var(--font-body);font-size:14px;outline:none;
+  padding:9px 13px;color:var(--text);
+  font-family:var(--font-body);font-size:13px;outline:none;
   transition:border-color 0.2s;
 }
-.email-form input::placeholder{color:var(--text-muted);}
-.email-form input:focus{border-color:var(--border-light);}
-.btn-white{
-  background:var(--text);color:#000;border:none;
-  border-radius:8px;padding:12px 22px;font-weight:700;
-  font-family:var(--font-head);font-size:13px;cursor:pointer;
-  transition:opacity 0.2s;white-space:nowrap;
+.token-input:focus{border-color:var(--border-light);}
+.token-save{
+  background:var(--text);color:var(--bg);border:none;
+  border-radius:8px;padding:9px 18px;
+  font-family:var(--font-head);font-weight:700;font-size:12px;
+  cursor:pointer;transition:opacity 0.2s;white-space:nowrap;
 }
-.btn-white:hover{opacity:0.88;}
+.token-save:hover{opacity:0.85;}
+.token-status{font-size:12px;font-weight:600;}
+.token-status.ok{color:var(--green);}
+.token-status.err{color:var(--red);}
 
-/* ── FOOTER ── */
-footer{
-  background:var(--surface);border-top:1px solid var(--border);
-  padding:48px 40px;
-  display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;
-}
-.footer-brand .nav-logo{font-size:20px;display:flex;margin-bottom:12px;}
-.footer-brand p{font-size:13px;color:var(--text-muted);line-height:1.7;}
-.footer-col h4{font-family:var(--font-head);font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-faint);margin-bottom:14px;}
-.footer-col a{display:block;color:var(--text-muted);text-decoration:none;font-size:13px;margin-bottom:10px;transition:color 0.2s;}
-.footer-col a:hover{color:var(--text);}
-.footer-bottom{padding:18px 40px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text-muted);}
-
-/* ── MODAL ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.88);backdrop-filter:blur(10px);z-index:200;display:none;align-items:center;justify-content:center;}
-.modal-overlay.open{display:flex;}
-.modal{
+/* ── STATS ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.stat-card{
   background:var(--surface);border:1px solid var(--border);
-  border-radius:14px;padding:0;max-width:680px;width:95%;
-  max-height:88vh;overflow-y:auto;
-  animation:modalIn 0.25s ease;position:relative;
+  border-radius:10px;padding:18px 20px;
+  transition:border-color 0.2s,background 0.3s;
 }
-@keyframes modalIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-.modal-close{
-  position:absolute;top:14px;right:14px;z-index:10;
-  background:rgba(0,0,0,0.6);border:1px solid var(--border);
-  color:var(--text-muted);width:32px;height:32px;border-radius:50%;
-  cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;
-  transition:all 0.2s;backdrop-filter:blur(4px);
+.stat-card:hover{border-color:var(--border-light);}
+.sc-icon{font-size:20px;margin-bottom:8px;}
+.sc-num{font-family:var(--font-head);font-size:26px;font-weight:800;line-height:1;margin-bottom:3px;}
+.sc-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;}
+
+/* ── TABS ── */
+.tabs{
+  display:flex;gap:3px;margin-bottom:24px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:9px;padding:3px;width:fit-content;
+  transition:background 0.3s,border-color 0.3s;
 }
-.modal-close:hover{border-color:var(--border-light);color:var(--text);}
-.modal-img{width:100%;aspect-ratio:16/9;overflow:hidden;border-radius:14px 14px 0 0;}
-.modal-img img{width:100%;height:100%;object-fit:cover;display:block;background:var(--surface2);}
-.modal-content{padding:28px 32px 32px;}
-.modal-title{font-family:var(--font-head);font-size:24px;font-weight:800;line-height:1.2;margin:10px 0 10px;}
-.modal-meta{font-size:13px;color:var(--text-muted);margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border);}
-.modal-body{font-size:15px;line-height:1.9;color:var(--text-muted);}
-.modal-body p{margin-bottom:16px;}
+.tab{
+  padding:8px 18px;border-radius:6px;cursor:pointer;
+  font-size:13px;font-weight:500;color:var(--text-muted);
+  transition:all 0.2s;border:1px solid transparent;
+  background:none;font-family:var(--font-body);
+}
+.tab.active{background:var(--surface2);color:var(--text);border-color:var(--border);}
+.tab:hover:not(.active){color:var(--text);}
+
+/* ── WRITE FORM ── */
+.write-form{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;overflow:hidden;
+  transition:background 0.3s,border-color 0.3s;
+}
+.form-header{
+  padding:18px 24px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.form-header h3{font-family:var(--font-head);font-size:16px;font-weight:700;}
+.form-header-note{font-size:12px;color:var(--text-muted);}
+.form-body{padding:24px;}
+.fg{margin-bottom:18px;}
+.fl{
+  display:block;font-size:11px;font-weight:600;
+  letter-spacing:1px;text-transform:uppercase;
+  color:var(--text-muted);margin-bottom:7px;
+}
+.fi{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  border-radius:9px;padding:11px 14px;color:var(--text);
+  font-family:var(--font-body);font-size:14px;outline:none;
+  transition:border-color 0.2s,background 0.3s;
+}
+.fi:focus{border-color:var(--border-light);}
+.fi::placeholder{color:var(--text-muted);}
+select.fi{cursor:pointer;}
+textarea.fi{resize:vertical;line-height:1.6;}
+
+/* Image URL preview row */
+.img-url-row{display:flex;gap:12px;align-items:flex-start;}
+.img-url-row .fi{flex:1;}
+.img-preview-thumb{
+  width:80px;height:54px;flex-shrink:0;border-radius:7px;
+  overflow:hidden;background:var(--surface3);
+  border:1px solid var(--border);display:flex;
+  align-items:center;justify-content:center;
+  font-size:20px;color:var(--text-faint);
+  transition:border-color 0.2s;
+}
+.img-preview-thumb img{
+  width:100%;height:100%;object-fit:cover;display:none;
+}
+
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.char-count{font-size:11px;color:var(--text-muted);text-align:right;margin-top:4px;}
+
+/* ── FORM ACTIONS ── */
+.form-actions{
+  display:flex;gap:10px;align-items:center;
+  padding:18px 24px;border-top:1px solid var(--border);flex-wrap:wrap;
+}
+.btn-publish{
+  background:var(--text);color:var(--bg);border:none;
+  border-radius:9px;padding:11px 24px;
+  font-family:var(--font-head);font-weight:700;font-size:13px;
+  cursor:pointer;transition:opacity 0.2s;
+  display:flex;align-items:center;gap:8px;
+}
+.btn-publish:hover{opacity:0.85;}
+.btn-publish:disabled{opacity:0.4;pointer-events:none;}
+.btn-clear{
+  background:transparent;color:var(--text-muted);
+  border:1px solid var(--border);border-radius:9px;
+  padding:11px 18px;font-family:var(--font-body);font-size:13px;
+  cursor:pointer;transition:all 0.2s;
+}
+.btn-clear:hover{color:var(--text);border-color:var(--border-light);}
+.featured-toggle{display:flex;align-items:center;gap:9px;margin-left:auto;}
+.toggle-label{font-size:13px;color:var(--text-muted);}
+.toggle{
+  width:42px;height:23px;background:var(--border);border-radius:12px;
+  cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0;
+}
+.toggle.on{background:var(--text);}
+.toggle::after{
+  content:'';width:17px;height:17px;background:var(--bg);border-radius:50%;
+  position:absolute;top:3px;left:3px;transition:left 0.2s;
+}
+html[data-theme="light"] .toggle::after{background:#fff;}
+.toggle.on::after{left:22px;}
+
+/* ── ARTICLES TABLE ── */
+.articles-table{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;overflow:hidden;
+  transition:background 0.3s,border-color 0.3s;
+}
+.table-head{
+  display:grid;grid-template-columns:1fr 100px 130px 80px 80px;
+  padding:12px 20px;background:var(--surface2);
+  border-bottom:1px solid var(--border);
+  font-size:10px;font-weight:700;letter-spacing:1px;
+  text-transform:uppercase;color:var(--text-muted);
+}
+.table-row{
+  display:grid;grid-template-columns:1fr 100px 130px 80px 80px;
+  padding:14px 20px;border-bottom:1px solid var(--border);
+  align-items:center;transition:background 0.2s;
+}
+.table-row:last-child{border-bottom:none;}
+.table-row:hover{background:var(--surface2);}
+.tr-title{font-size:13.5px;font-weight:600;line-height:1.3;}
+.tr-sub{
+  font-size:12px;color:var(--text-muted);margin-top:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:360px;
+}
+.cat-tag{
+  display:inline-block;font-size:10px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;
+  padding:2px 8px;border-radius:4px;
+  background:var(--accent-dim);color:var(--text-muted);
+}
+.tr-date{font-size:12px;color:var(--text-muted);}
+.tr-actions{display:flex;gap:7px;}
+.action-btn{
+  width:28px;height:28px;border-radius:6px;
+  border:1px solid var(--border);background:none;cursor:pointer;
+  font-size:12px;display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;color:var(--text-muted);
+}
+.action-btn:hover{border-color:var(--red);color:var(--red);}
+.empty-state{padding:56px;text-align:center;color:var(--text-muted);}
+
+/* ── PROGRESS BAR ── */
+.progress-bar{
+  height:2px;background:var(--text);width:0%;
+  transition:width 0.3s;position:fixed;top:0;left:0;z-index:1000;
+  opacity:0.7;
+}
 
 /* ── TOAST ── */
 .toast{
-  position:fixed;bottom:28px;right:28px;
+  position:fixed;bottom:24px;right:24px;
   background:var(--surface2);border:1px solid var(--border-light);
-  border-radius:10px;padding:13px 18px;
-  font-size:13px;font-weight:500;color:var(--text);
-  box-shadow:0 8px 32px rgba(0,0,0,0.6);z-index:300;
-  transform:translateY(12px);opacity:0;
+  border-radius:10px;padding:12px 18px;font-size:13px;font-weight:500;
+  color:var(--text);box-shadow:0 8px 32px rgba(0,0,0,0.4);z-index:300;
+  transform:translateY(12px);opacity:0;max-width:360px;
   transition:all 0.35s cubic-bezier(0.34,1.4,0.64,1);
 }
 .toast.show{transform:translateY(0);opacity:1;}
+.toast.success{border-color:rgba(0,186,124,0.4);color:var(--green);}
+.toast.error{border-color:rgba(244,33,46,0.4);color:var(--red);}
 
-/* ── SMOOTH THEME TRANSITIONS ── */
-nav, .card, .newsletter, footer, .modal, .ticker-wrap,
-.news-item, .pill, .email-form input, .toast, .footer-bottom,
-.modal-close, .hero-tag, .card-cat{
-  transition:background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+/* ── CONFIRM DIALOG ── */
+.confirm-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.8);
+  backdrop-filter:blur(8px);z-index:200;
+  display:none;align-items:center;justify-content:center;
 }
+.confirm-overlay.open{display:flex;}
+.confirm-box{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;padding:30px;max-width:360px;width:95%;
+  text-align:center;animation:modalIn 0.25s ease;
+}
+@keyframes modalIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.confirm-box h3{font-family:var(--font-head);font-size:18px;margin-bottom:8px;}
+.confirm-box p{font-size:13px;color:var(--text-muted);margin-bottom:22px;line-height:1.6;}
+.confirm-btns{display:flex;gap:10px;justify-content:center;}
+.btn-del{
+  background:var(--red);color:#fff;border:none;
+  border-radius:8px;padding:9px 22px;font-weight:700;
+  cursor:pointer;font-family:var(--font-body);font-size:13px;
+  transition:opacity 0.2s;
+}
+.btn-del:hover{opacity:0.85;}
+.btn-cancel{
+  background:transparent;color:var(--text-muted);
+  border:1px solid var(--border);border-radius:8px;
+  padding:9px 18px;cursor:pointer;
+  font-family:var(--font-body);font-size:13px;transition:all 0.2s;
+}
+.btn-cancel:hover{color:var(--text);border-color:var(--border-light);}
 
 /* ── RESPONSIVE ── */
 @media(max-width:900px){
-  nav{padding:0 20px;}
-  .nav-links{display:none;}
-  .hero{padding:90px 20px 60px;}
-  section{padding:56px 20px;}
-  .featured-grid{grid-template-columns:1fr;}
-  .card-hero{grid-row:span 1;}
-  footer{grid-template-columns:1fr 1fr;padding:36px 20px;}
-  .footer-bottom{flex-direction:column;gap:8px;padding:14px 20px;}
-  .news-item{grid-template-columns:1fr 80px;gap:12px;}
-  .news-thumb{width:80px;height:56px;}
+  .sidebar{display:none;}
+  .dash-main{margin-left:0;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .form-row{grid-template-columns:1fr;}
+  .table-head,.table-row{grid-template-columns:1fr 80px;}
+  .table-head span:nth-child(n+2):nth-child(-n+4),
+  .table-row>*:nth-child(n+2):nth-child(-n+4){display:none;}
+  .dash-content{padding:20px 16px;}
 }
 @media(max-width:600px){
-  .newsletter{padding:36px 24px;}
-  .email-form{flex-direction:column;}
-  .hero-stats{gap:28px;}
+  .img-url-row{flex-direction:column;}
+  .img-preview-thumb{width:100%;height:100px;}
 }
 </style>
 </head>
 <body>
 
-<script>
-  const GITHUB_USERNAME = "khalid-4597";
-  const GITHUB_REPO     = "maqaaltech";
-  const RAW_URL = "https://raw.githubusercontent.com/" + GITHUB_USERNAME + "/" + GITHUB_REPO + "/main/articles.json";
-</script>
+<div class="progress-bar" id="progress"></div>
 
-<!-- NAV -->
-<nav>
-  <a href="index.html" class="nav-logo">
-    <img src="logo.png" alt="MaqaalTech Logo"/>
-    Maqaal<span>Tech</span>
-  </a>
-  <div class="nav-links">
-    <a href="#featured">Featured</a>
-    <a href="#latest">Latest</a>
-    <a href="admin-login.html">Admin</a>
-    <span class="nav-badge">Live</span>
-    <button id="theme-toggle" aria-label="Toggle dark/light mode" onclick="toggleTheme()">
-      <!-- Moon icon (shown in dark mode) -->
-      <svg id="icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>
-      <!-- Sun icon (shown in light mode) -->
-      <svg id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-    </button>
-  </div>
-</nav>
+<div class="dash-wrap">
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-content">
-    <div class="hero-tag">The pulse of artificial intelligence</div>
-    <h1 class="hero-title">Where<br/><span class="line-dim">AI Meets</span><br/>Tomorrow</h1>
-    <div class="hero-divider"></div>
-    <p class="hero-sub">Deep dives, breaking news, and expert analysis on machine learning, LLMs, robotics, and the future of technology.</p>
-    <div class="hero-stats">
-      <div class="stat"><span class="stat-num" id="cnt-articles">—</span><span class="stat-label">Articles</span></div>
-      <div class="stat"><span class="stat-num">4</span><span class="stat-label">Topics</span></div>
-      <div class="stat"><span class="stat-num">24K+</span><span class="stat-label">Readers</span></div>
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-dot"></div>
+      Maqaal<span style="color:var(--text-muted);font-weight:400">Tech</span>
+    </div>
+    <nav class="sidebar-menu">
+      <button class="menu-item active" onclick="showTab('write')" id="menu-write">
+        <span class="mi">✍️</span>Write Article
+      </button>
+      <button class="menu-item" onclick="showTab('articles')" id="menu-articles">
+        <span class="mi">📰</span>All Articles
+      </button>
+      <a class="menu-item" href="index.html" target="_blank">
+        <span class="mi">🌐</span>View Site
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-badge">
+        <div class="user-avatar">K</div>
+        <div class="user-info">
+          <div class="user-name">Khalid</div>
+          <div class="user-role">Editor-in-Chief</div>
+        </div>
+        <button class="logout-btn" onclick="logout()" title="Logout">⏏</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <div class="dash-main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="topbar-title" id="page-title">Write New Article</div>
+      <div class="topbar-right">
+        <div class="live-dot">Live</div>
+        <a class="view-btn" href="index.html" target="_blank">🌐 View Site</a>
+        <button id="theme-toggle" aria-label="Toggle dark/light mode" onclick="toggleTheme()">
+          <svg id="icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>
+          <svg id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="dash-content">
+
+      <!-- TOKEN BOX -->
+      <div class="token-box" id="token-box">
+        <span class="token-label">🔑 GitHub Token</span>
+        <input class="token-input" id="gh-token" type="password"
+               placeholder="Paste your GitHub Personal Access Token (ghp_xxx…)"/>
+        <button class="token-save" onclick="saveToken()">Connect</button>
+        <span class="token-status" id="token-status"></span>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="sc-icon">📰</div>
+          <div class="sc-num" id="sc-total">—</div>
+          <div class="sc-label">Total Articles</div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-icon">⭐</div>
+          <div class="sc-num" id="sc-featured">—</div>
+          <div class="sc-label">Featured</div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-icon">📅</div>
+          <div class="sc-num" id="sc-today">0</div>
+          <div class="sc-label">Today</div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-icon">🔗</div>
+          <div class="sc-num" id="sc-conn">—</div>
+          <div class="sc-label">GitHub</div>
+        </div>
+      </div>
+
+      <!-- TABS -->
+      <div class="tabs">
+        <button class="tab active" onclick="showTab('write')" id="tab-write">✍️ Write Article</button>
+        <button class="tab" onclick="showTab('articles')" id="tab-articles">📋 Manage Articles</button>
+      </div>
+
+      <!-- ── WRITE PANEL ── -->
+      <div id="panel-write">
+        <div class="write-form">
+          <div class="form-header">
+            <h3>Publish New Article</h3>
+            <span class="form-header-note">Saves directly to GitHub → live for all visitors</span>
+          </div>
+          <div class="form-body">
+
+            <!-- Title -->
+            <div class="fg">
+              <label class="fl">Article Title</label>
+              <input class="fi" id="art-title" type="text"
+                     placeholder="e.g. OpenAI Releases GPT-6 with New Capabilities"
+                     maxlength="120" oninput="cc('art-title','tc-title',120)"/>
+              <div class="char-count"><span id="tc-title">0</span>/120</div>
+            </div>
+
+            <!-- Excerpt -->
+            <div class="fg">
+              <label class="fl">Short Excerpt</label>
+              <textarea class="fi" id="art-excerpt"
+                        placeholder="2–3 sentence summary shown on homepage cards…"
+                        maxlength="220" rows="3"
+                        oninput="cc('art-excerpt','tc-excerpt',220)"
+                        style="min-height:80px"></textarea>
+              <div class="char-count"><span id="tc-excerpt">0</span>/220</div>
+            </div>
+
+            <!-- Full Body -->
+            <div class="fg">
+              <label class="fl">Full Article Body</label>
+              <textarea class="fi" id="article-body"
+                        placeholder="Write the full article content here. This is what readers see when they open the article…"
+                        style="min-height:180px"></textarea>
+            </div>
+
+            <!-- ── IMAGE URL (NEW) ── -->
+            <div class="fg">
+              <label class="fl">Article Image URL</label>
+              <div class="img-url-row">
+                <input class="fi" id="art-image" type="url"
+                       placeholder="https://example.com/image.jpg  (leave blank for default placeholder)"
+                       oninput="previewImage(this.value)"/>
+                <div class="img-preview-thumb" id="img-preview-box" title="Image preview">
+                  <img id="img-preview-el" src="" alt="preview"/>
+                  <span id="img-preview-icon">🖼</span>
+                </div>
+              </div>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:6px;">
+                Paste a direct image URL (e.g. from Unsplash, Pexels, or your CDN).
+                A live preview appears on the right as you type.
+              </div>
+            </div>
+
+            <!-- Category & Author -->
+            <div class="form-row">
+              <div class="fg">
+                <label class="fl">Category</label>
+                <select class="fi" id="art-cat">
+                  <option value="">— Select Category —</option>
+                  <option value="ML">Machine Learning</option>
+                  <option value="LLM">Large Language Models</option>
+                  <option value="Robotics">Robotics</option>
+                  <option value="Policy">AI Policy</option>
+                </select>
+              </div>
+              <div class="fg">
+                <label class="fl">Author Name</label>
+                <input class="fi" id="art-author" type="text" value="MaqaalTech Staff"/>
+              </div>
+            </div>
+
+          </div><!-- /form-body -->
+
+          <div class="form-actions">
+            <button class="btn-publish" id="pub-btn" onclick="publishArticle()">
+              <span id="pub-icon">🚀</span>
+              <span id="pub-text">Publish to GitHub</span>
+            </button>
+            <button class="btn-clear" onclick="clearForm()">✕ Clear</button>
+            <div class="featured-toggle">
+              <span class="toggle-label">Featured</span>
+              <div class="toggle" id="feat-toggle" onclick="this.classList.toggle('on')"></div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /panel-write -->
+
+      <!-- ── ARTICLES PANEL ── -->
+      <div id="panel-articles" style="display:none">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:14px;">
+          <button class="token-save" onclick="loadArticles()">🔄 Refresh from GitHub</button>
+        </div>
+        <div class="articles-table">
+          <div class="table-head">
+            <span>Article</span>
+            <span>Category</span>
+            <span>Date</span>
+            <span>Featured</span>
+            <span>Actions</span>
+          </div>
+          <div id="articles-body"></div>
+        </div>
+      </div>
+
+    </div><!-- /dash-content -->
+  </div><!-- /dash-main -->
+</div><!-- /dash-wrap -->
+
+<!-- CONFIRM DELETE -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <h3>Delete Article?</h3>
+    <p>This permanently removes the article from GitHub and updates the live site instantly.</p>
+    <div class="confirm-btns">
+      <button class="btn-cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="btn-del" onclick="confirmDelete()">Delete</button>
     </div>
   </div>
-</section>
-
-<!-- TICKER -->
-<div class="ticker-wrap">
-  <div class="ticker-inner" id="ticker"></div>
 </div>
 
-<!-- FEATURED -->
-<section id="featured">
-  <div class="section-label">Featured Stories</div>
-  <h2 class="section-title">Top AI Developments</h2>
-  <p class="section-sub">The most important stories in artificial intelligence right now.</p>
-  <div id="featured-grid" class="featured-grid"></div>
-</section>
-
-<!-- LATEST -->
-<section id="latest" style="padding-top:0">
-  <div class="section-label">Latest News</div>
-  <h2 class="section-title">Fresh Off the Wire</h2>
-  <div class="cat-filter" id="cat-filter"></div>
-  <div id="news-list" class="news-list"></div>
-</section>
-
-<!-- NEWSLETTER -->
-<section>
-  <div class="newsletter">
-    <h2>Stay Ahead of the Curve</h2>
-    <p>Get the most impactful AI news delivered to your inbox — no noise, just signal.</p>
-    <div class="email-form">
-      <input type="email" id="email-in" placeholder="your@email.com"/>
-      <button class="btn-white" onclick="subscribe()">Subscribe</button>
-    </div>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-brand">
-    <a href="index.html" class="nav-logo">
-      <img src="logo.png" alt="MaqaalTech Logo" style="height:30px;width:auto;"/>
-      Maqaal<span>Tech</span>
-    </a>
-    <p>Your definitive source for AI news, research breakthroughs, and technology insights.</p>
-  </div>
-  <div class="footer-col"><h4>Topics</h4><a href="#">Machine Learning</a><a href="#">Large Language Models</a><a href="#">Robotics</a><a href="#">AI Policy</a></div>
-  <div class="footer-col"><h4>Company</h4><a href="#">About Us</a><a href="#">Contact</a><a href="admin-login.html">Admin Portal</a></div>
-  <div class="footer-col"><h4>Follow</h4><a href="#">X / Twitter</a><a href="#">LinkedIn</a><a href="#">YouTube</a><a href="#">RSS Feed</a></div>
-</footer>
-<div class="footer-bottom">
-  <span>© 2025 MaqaalTech. All rights reserved.</span>
-  <span>Built for the AI generation</span>
-</div>
-
-<!-- MODAL -->
-<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div class="modal-img"><img id="modal-img-el" src="" alt=""/></div>
-    <div class="modal-content">
-      <div id="modal-cat"></div>
-      <h2 class="modal-title" id="modal-title"></h2>
-      <div class="modal-meta" id="modal-meta"></div>
-      <div class="modal-body" id="modal-body"></div>
-    </div>
-  </div>
-</div>
-
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
-  /* ── Ticker ── */
-  const ti = ['GPT-5 Released','AlphaFold 3','EU AI Act','Atlas 2.0','Gemini Ultra 2','Llama 4','AI Safety Summit','Chips Act'];
-  const tk = document.getElementById('ticker');
-  tk.innerHTML = [...ti,...ti,...ti,...ti].map(t => `<span class="ticker-item"><span>◆</span>${t}</span>`).join('');
-
-  /* ── Placeholder image (inline SVG data URI) ── */
-  const PLACEHOLDER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='450'%3E%3Crect width='800' height='450' fill='%230f0f0f'/%3E%3Crect x='346' y='181' width='108' height='88' rx='8' fill='%231a1a1a'/%3E%3Ccircle cx='374' cy='203' r='14' fill='%23242424'/%3E%3Cpolygon points='346,269 400,213 454,269' fill='%23242424'/%3E%3C/svg%3E";
-
-  function getImage(article) {
-    return (article.image && article.image.trim()) ? article.image.trim() : PLACEHOLDER;
+  /* ── AUTH GUARD ── */
+  if (!sessionStorage.getItem('maqaaltech_admin')) {
+    window.location.href = 'admin-login.html';
   }
 
-  let allArticles = [];
-
-  /* ── Fetch ── */
-  async function fetchArticles() {
-    document.getElementById('featured-grid').innerHTML =
-      '<div style="grid-column:span 2"><div class="loading-state"><div class="spinner"></div><span style="font-size:13px">Loading articles…</span></div></div>';
-    document.getElementById('news-list').innerHTML =
-      '<div class="loading-state"><div class="spinner"></div></div>';
-    try {
-      const r = await fetch(RAW_URL + '?t=' + Date.now());
-      if (!r.ok) throw new Error();
-      const raw = await r.json();
-      allArticles = raw.slice().sort((a, b) => b.id - a.id);
-      document.getElementById('cnt-articles').textContent = allArticles.length;
-      renderFeatured(allArticles);
-      buildFilters(allArticles);
-      renderNewsList(allArticles);
-    } catch {
-      document.getElementById('featured-grid').innerHTML =
-        '<div style="grid-column:span 2;color:var(--text-muted);padding:60px;text-align:center;font-size:14px">⚠️ Could not load articles.<br/>Make sure the GitHub repo is <strong>Public</strong> and articles.json is uploaded.</div>';
-      document.getElementById('news-list').innerHTML = '';
-    }
-  }
-
-  /* ── Featured cards ── */
-  function renderFeatured(articles) {
-    const items = articles.filter(a => a.featured);
-    const el = document.getElementById('featured-grid');
-    el.innerHTML = items.map((a, i) => `
-      <div class="card${i === 0 ? ' card-hero' : ''}" onclick="openModal(${a.id})">
-        <div class="card-img">
-          <img src="${getImage(a)}" alt="${escHtml(a.title)}" loading="lazy" onerror="this.src='${PLACEHOLDER}'"/>
-        </div>
-        <div class="card-body">
-          <span class="card-cat">${escHtml(a.category)}</span>
-          <div class="card-title">${escHtml(a.title)}</div>
-          <p class="card-excerpt">${escHtml(a.excerpt)}</p>
-          <div class="card-meta">
-            <span>${escHtml(a.author)}</span>
-            <span class="card-meta-dot"></span>
-            <span>${escHtml(a.date)}</span>
-          </div>
-        </div>
-      </div>`).join('');
-  }
-
-  /* ── Category filters ── */
-  function buildFilters(articles) {
-    const cats = ['All', ...new Set(articles.map(a => a.category))];
-    document.getElementById('cat-filter').innerHTML = cats.map((c, i) =>
-      `<button class="pill${i === 0 ? ' active' : ''}" onclick="filterBy('${escAttr(c)}',this)">${escHtml(c)}</button>`
-    ).join('');
-  }
-
-  function filterBy(cat, btn) {
-    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-    renderNewsList(cat === 'All' ? allArticles : allArticles.filter(a => a.category === cat));
-  }
-
-  /* ── News list (with thumbnails) ── */
-  function renderNewsList(articles) {
-    const el = document.getElementById('news-list');
-    el.innerHTML = articles.map(a => `
-      <div class="news-item" onclick="openModal(${a.id})">
-        <div class="news-item-left">
-          <div class="news-title">${escHtml(a.title)}</div>
-          <div class="news-meta">
-            <span class="card-cat" style="font-size:10px;padding:2px 8px;">${escHtml(a.category)}</span>
-            <span>${escHtml(a.author)}</span>
-            <span>·</span>
-            <span>${escHtml(a.date)}</span>
-          </div>
-        </div>
-        <div class="news-thumb">
-          <img src="${getImage(a)}" alt="${escHtml(a.title)}" loading="lazy" onerror="this.src='${PLACEHOLDER}'"/>
-        </div>
-      </div>`).join('') ||
-      '<div style="color:var(--text-muted);padding:40px 0;font-size:14px">No articles found.</div>';
-  }
-
-  /* ── Modal ── */
-  function openModal(id) {
-    const a = allArticles.find(x => x.id === id);
-    if (!a) return;
-    document.getElementById('modal-img-el').src = getImage(a);
-    document.getElementById('modal-img-el').alt = a.title;
-    document.getElementById('modal-img-el').onerror = function(){ this.src = PLACEHOLDER; };
-    document.getElementById('modal-cat').innerHTML = `<span class="card-cat">${escHtml(a.category)}</span>`;
-    document.getElementById('modal-title').textContent = a.title;
-    document.getElementById('modal-meta').innerHTML = `By <strong style="color:var(--text)">${escHtml(a.author)}</strong> &nbsp;·&nbsp; ${escHtml(a.date)}`;
-    document.getElementById('modal-body').innerHTML = `<p>${a.body}</p>`;
-    document.getElementById('modal').classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeModal() {
-    document.getElementById('modal').classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  /* ── Subscribe ── */
-  function subscribe() {
-    const v = document.getElementById('email-in').value;
-    if (!v || !v.includes('@')) { showToast('⚠ Valid email required.'); return; }
-    document.getElementById('email-in').value = '';
-    showToast('✓ Subscribed! Welcome to MaqaalTech.');
-  }
-
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3200);
-  }
-
-  /* ── Helpers ── */
-  function escHtml(str) {
-    if (!str) return '';
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-  function escAttr(str) {
-    if (!str) return '';
-    return String(str).replace(/'/g,"\\'");
-  }
-
-  /* Keyboard close */
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-
-  /* ── THEME TOGGLE ── */
+  /* ── THEME (reads same localStorage key as main site) ── */
   (function initTheme() {
     const saved = localStorage.getItem('maqaaltech-theme');
-    // Default to dark; apply saved preference immediately (no flash)
-    const theme = saved === 'light' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.setAttribute('data-theme', saved === 'light' ? 'light' : 'dark');
   })();
-
   function toggleTheme() {
-    const current = document.documentElement.getAttribute('data-theme');
-    const next = current === 'light' ? 'dark' : 'light';
+    const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
     document.documentElement.setAttribute('data-theme', next);
     localStorage.setItem('maqaaltech-theme', next);
   }
 
-  fetchArticles();
+  /* ── GITHUB CONFIG ── */
+  const GH_USER = "khalid-4597";
+  const GH_REPO = "maqaaltech";
+  const GH_FILE = "articles.json";
+  const GH_API  = "https://api.github.com/repos/" + GH_USER + "/" + GH_REPO + "/contents/" + GH_FILE;
+
+  let GH_TOKEN = localStorage.getItem('maqaaltech_token') || '';
+  let allArticles = [];
+  let deleteTargetId = null;
+
+  if (GH_TOKEN) {
+    document.getElementById('gh-token').value = GH_TOKEN;
+    document.getElementById('token-status').textContent = '✓ Token loaded';
+    document.getElementById('token-status').className = 'token-status ok';
+    document.getElementById('token-box').classList.add('connected');
+    document.getElementById('sc-conn').textContent = '✓ OK';
+    loadArticles();
+  }
+
+  /* ── TOKEN ── */
+  async function saveToken() {
+    const t = document.getElementById('gh-token').value.trim();
+    if (!t) { showToast('⚠ Token required.', 'error'); return; }
+    const statusEl = document.getElementById('token-status');
+    statusEl.textContent = 'Testing…'; statusEl.className = 'token-status';
+    try {
+      const r = await fetch("https://api.github.com/repos/" + GH_USER + "/" + GH_REPO, {
+        headers: { Authorization: 'token ' + t, Accept: 'application/vnd.github.v3+json' }
+      });
+      if (!r.ok) throw new Error();
+      GH_TOKEN = t;
+      localStorage.setItem('maqaaltech_token', t);
+      statusEl.textContent = '✓ Connected!'; statusEl.className = 'token-status ok';
+      document.getElementById('token-box').classList.add('connected');
+      document.getElementById('sc-conn').textContent = '✓ OK';
+      showToast('✓ GitHub connected! You can now publish articles.', 'success');
+      loadArticles();
+    } catch {
+      statusEl.textContent = '✗ Failed. Check token.'; statusEl.className = 'token-status err';
+      showToast('✗ Token invalid. Generate a new one from GitHub settings.', 'error');
+    }
+  }
+
+  /* ── LOAD ── */
+  async function loadArticles() {
+    if (!GH_TOKEN) return;
+    try {
+      const r = await fetch(GH_API + '?t=' + Date.now(), {
+        headers: { Authorization: 'token ' + GH_TOKEN, Accept: 'application/vnd.github.v3+json' }
+      });
+      if (!r.ok) throw new Error();
+      const data = await r.json();
+      allArticles = JSON.parse(atob(data.content.replace(/\n/g, '')));
+      updateStats();
+      if (document.getElementById('panel-articles').style.display !== 'none') renderTable();
+    } catch {
+      showToast('Could not load articles from GitHub.', 'error');
+    }
+  }
+
+  function updateStats() {
+    document.getElementById('sc-total').textContent = allArticles.length;
+    document.getElementById('sc-featured').textContent = allArticles.filter(a => a.featured).length;
+    document.getElementById('sc-today').textContent = allArticles.filter(a => a.date === formatDate()).length;
+    document.getElementById('sc-conn').textContent = GH_TOKEN ? '✓ OK' : '—';
+  }
+
+  /* ── PUBLISH ── */
+  async function publishArticle() {
+    const title    = document.getElementById('art-title').value.trim();
+    const excerpt  = document.getElementById('art-excerpt').value.trim();
+    const body     = document.getElementById('article-body').value.trim();
+    const cat      = document.getElementById('art-cat').value;
+    const author   = document.getElementById('art-author').value.trim();
+    const image    = document.getElementById('art-image').value.trim();   // ← NEW
+    const featured = document.getElementById('feat-toggle').classList.contains('on');
+
+    if (!GH_TOKEN)                      { showToast('⚠ Connect your GitHub token first.', 'error'); return; }
+    if (!title||!excerpt||!body||!cat||!author) { showToast('⚠ Fill in all required fields.', 'error'); return; }
+
+    const btn = document.getElementById('pub-btn');
+    btn.disabled = true;
+    document.getElementById('pub-icon').textContent = '⏳';
+    document.getElementById('pub-text').textContent = 'Publishing…';
+    setProgress(20);
+
+    try {
+      const fileRes = await fetch(GH_API + '?t=' + Date.now(), {
+        headers: { Authorization: 'token ' + GH_TOKEN, Accept: 'application/vnd.github.v3+json' }
+      });
+      setProgress(40);
+
+      let sha = null, current = [];
+      if (fileRes.ok) {
+        const fd = await fileRes.json();
+        sha = fd.sha;
+        current = JSON.parse(atob(fd.content.replace(/\n/g, '')));
+      }
+
+      // Build article object — image included (empty string if not provided)
+      const newArticle = {
+        id: Date.now(),
+        title, excerpt, body,
+        category: cat,
+        author,
+        date: formatDate(),
+        featured,
+        image: image || ''      // ← saved into JSON
+      };
+
+      const updated = [newArticle, ...current];
+      setProgress(65);
+
+      const pushRes = await fetch(GH_API, {
+        method: 'PUT',
+        headers: {
+          Authorization: 'token ' + GH_TOKEN,
+          Accept: 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: 'Add article: ' + title.slice(0, 60),
+          content: btoa(unescape(encodeURIComponent(JSON.stringify(updated, null, 2)))),
+          sha: sha
+        })
+      });
+      setProgress(90);
+
+      if (!pushRes.ok) {
+        const err = await pushRes.json();
+        throw new Error(err.message || 'Push failed');
+      }
+
+      allArticles = updated;
+      updateStats();
+      clearForm();
+      setProgress(100);
+      setTimeout(() => setProgress(0), 600);
+      showToast('✓ Article published! Visible on homepage now.', 'success');
+
+    } catch (e) {
+      showToast('✗ Publish failed: ' + e.message, 'error');
+      setProgress(0);
+    } finally {
+      btn.disabled = false;
+      document.getElementById('pub-icon').textContent = '🚀';
+      document.getElementById('pub-text').textContent = 'Publish to GitHub';
+    }
+  }
+
+  /* ── DELETE ── */
+  async function deleteArticle(id) {
+    if (!GH_TOKEN) { showToast('Connect token first.', 'error'); return; }
+    try {
+      const fileRes = await fetch(GH_API + '?t=' + Date.now(), {
+        headers: { Authorization: 'token ' + GH_TOKEN, Accept: 'application/vnd.github.v3+json' }
+      });
+      const fd = await fileRes.json();
+      const current = JSON.parse(atob(fd.content.replace(/\n/g, '')));
+      const updated = current.filter(a => a.id !== id);
+      await fetch(GH_API, {
+        method: 'PUT',
+        headers: {
+          Authorization: 'token ' + GH_TOKEN,
+          Accept: 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: 'Delete article id:' + id,
+          content: btoa(unescape(encodeURIComponent(JSON.stringify(updated, null, 2)))),
+          sha: fd.sha
+        })
+      });
+      allArticles = updated;
+      updateStats();
+      renderTable();
+      showToast('🗑 Article deleted.', 'success');
+    } catch (e) {
+      showToast('Delete failed: ' + e.message, 'error');
+    }
+  }
+
+  /* ── TABLE ── */
+  function renderTable() {
+    const tb = document.getElementById('articles-body');
+    if (!allArticles.length) {
+      tb.innerHTML = '<div class="empty-state"><div style="font-size:32px;margin-bottom:10px">📭</div><p>No articles yet. Write your first one!</p></div>';
+      return;
+    }
+    tb.innerHTML = allArticles.map(a => `
+      <div class="table-row">
+        <div>
+          <div class="tr-title">${escHtml(a.title)}</div>
+          <div class="tr-sub">${escHtml(a.excerpt)}</div>
+        </div>
+        <div><span class="cat-tag">${escHtml(a.category)}</span></div>
+        <div class="tr-date">${escHtml(a.date)}</div>
+        <div>${a.featured ? '⭐' : '—'}</div>
+        <div class="tr-actions">
+          <button class="action-btn" onclick="askDelete(${a.id})" title="Delete">🗑</button>
+        </div>
+      </div>`).join('');
+  }
+
+  /* ── IMAGE PREVIEW ── */
+  function previewImage(url) {
+    const img  = document.getElementById('img-preview-el');
+    const icon = document.getElementById('img-preview-icon');
+    const box  = document.getElementById('img-preview-box');
+    if (!url || !url.startsWith('http')) {
+      img.style.display = 'none';
+      icon.style.display = 'block';
+      box.style.borderColor = '';
+      return;
+    }
+    img.src = url;
+    img.style.display = 'block';
+    icon.style.display = 'none';
+    box.style.borderColor = 'var(--border-light)';
+    img.onerror = () => {
+      img.style.display = 'none';
+      icon.style.display = 'block';
+      icon.textContent = '⚠️';
+      box.style.borderColor = 'rgba(244,33,46,0.4)';
+    };
+    img.onload = () => { icon.textContent = '🖼'; };
+  }
+
+  /* ── HELPERS ── */
+  function askDelete(id)  { deleteTargetId = id; document.getElementById('confirm-overlay').classList.add('open'); }
+  function closeConfirm() { document.getElementById('confirm-overlay').classList.remove('open'); deleteTargetId = null; }
+  function confirmDelete(){ if (deleteTargetId !== null) { deleteArticle(deleteTargetId); closeConfirm(); } }
+
+  function showTab(tab) {
+    ['write', 'articles'].forEach(t => {
+      document.getElementById('panel-' + t).style.display = t === tab ? 'block' : 'none';
+      document.getElementById('tab-' + t)?.classList.toggle('active', t === tab);
+      document.getElementById('menu-' + t)?.classList.toggle('active', t === tab);
+    });
+    document.getElementById('page-title').textContent = tab === 'write' ? 'Write New Article' : 'Manage Articles';
+    if (tab === 'articles') loadArticles().then(() => renderTable());
+  }
+
+  function cc(a, b, m) { document.getElementById(b).textContent = document.getElementById(a).value.length; }
+  function formatDate()  { return new Date().toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }); }
+  function setProgress(p){ document.getElementById('progress').style.width = p + '%'; }
+
+  function clearForm() {
+    ['art-title', 'art-excerpt', 'article-body', 'art-image'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('art-cat').value = '';
+    document.getElementById('art-author').value = 'MaqaalTech Staff';
+    document.getElementById('feat-toggle').classList.remove('on');
+    ['tc-title', 'tc-excerpt'].forEach(id => document.getElementById(id).textContent = '0');
+    previewImage(''); // reset preview
+  }
+
+  function escHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function showToast(msg, type = '') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast' + (type ? ' ' + type : '');
+    void t.offsetWidth;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 4000);
+  }
+
+  function logout() {
+    sessionStorage.removeItem('maqaaltech_admin');
+    window.location.href = 'admin-login.html';
+  }
 </script>
 </body>
 </html>
